@@ -1,4 +1,4 @@
-# Mr. Black 🎭🕵️
+# Mr. Black 🕵️
 
 A sleek, fast, and fun **Desi Party Game** inspired by "Undercover" and "Mr. White", designed for friends, families, and teams. Built with **Next.js 14**, styled with modern sleek gaming aesthetics, with OpenAI-compatible AI category pack generation and Upstash Redis rate limiting and deduplication.
 
