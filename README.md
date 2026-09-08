@@ -6,7 +6,7 @@ A sleek, fast, and fun **Desi Party Game** inspired by "Undercover" and "Mr. Whi
 
 ## 🌟 Game Highlights
 - **Pass-and-Play Friendly**: Play seamlessly on a single mobile or desktop device.
-- **Rich Desi Curated Packs**: Includes Bollywood, Chai & Street Food, Cricket Mania, Shaadi & Festivals, Tech & Office Life, and Indian Travel.
+- **Rich Curated Packs**: Includes 12 built-in packs (Food, Bollywood, Cricket, Shaadi, Tech, Nostalgia, Travel, Superheroes, Cartoons, Series, Companies, Anime) with 20+ pairs each.
 - **AI Custom Packs**: Generate custom Indian word pairs on the fly with any OpenAI-compatible endpoint (OpenAI, Groq, OpenRouter).
 - **Sleek Aesthetics**: Dark theme, Blurple (#5865F2) & Magenta highlights, animated mesh gradients, and smooth cards.
 - **Cinematic Victory Celebrations**: Dynamic, Among Us–inspired victory celebration screens with custom art and thematic atmospheric glows for Civilians, Undercovers, Mr. Black, and joint Impostor wins.

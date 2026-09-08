@@ -208,38 +208,11 @@ export function Lobby({ onStartGame }: LobbyProps) {
             </button>
           </div>
 
-          {/* Clean Grid of Word Packs including Community & Custom */}
-          <div className="grid grid-cols-2 gap-1.5">
-            {BUILT_IN_PACKS.map((pack) => {
-              const isSelected = selectedPackIds.includes(pack.id);
-              return (
-                <button
-                  key={pack.id}
-                  onClick={() => handleTogglePack(pack.id)}
-                  className={`px-3 py-2.5 rounded-xl text-left text-xs font-medium transition-all flex items-center justify-between border ${
-                    isSelected
-                      ? 'bg-discord-primary text-white border-discord-primary shadow-float'
-                      : 'bg-discord-surface-indigo/90 hover:bg-discord-surface-indigo text-discord-muted hover:text-white border-white/10'
-                  }`}
-                >
-                  <span className="truncate pr-1 uppercase text-xs tracking-wider">{pack.name}</span>
-                  <span
-                    className={`w-4 h-4 rounded-md shrink-0 flex items-center justify-center text-[9px] ${
-                      isSelected
-                        ? 'bg-white text-discord-primary font-bold'
-                        : 'border border-white/20'
-                    }`}
-                  >
-                    {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
-                  </span>
-                </button>
-              );
-            })}
-
-            {/* Custom AI Pack Card */}
+          {/* Custom AI Pack Card (Always prominent at top) */}
+          <div className="space-y-1.5">
             <button
               onClick={() => setIsAiPackActive(!isAiPackActive)}
-              className={`px-3 py-2.5 rounded-xl text-left text-xs font-medium transition-all flex items-center justify-between border ${
+              className={`w-full px-3 py-2.5 rounded-xl text-left text-xs font-medium transition-all flex items-center justify-between border ${
                 isAiPackActive
                   ? 'bg-discord-magenta text-white border-discord-magenta shadow-float'
                   : 'bg-discord-surface-indigo/90 hover:bg-discord-surface-indigo text-discord-muted hover:text-white border-white/10'
@@ -247,7 +220,7 @@ export function Lobby({ onStartGame }: LobbyProps) {
             >
               <div className="flex items-center gap-1.5 truncate pr-1">
                 <Sparkles className="w-3.5 h-3.5 text-discord-yellow shrink-0" />
-                <span className="uppercase text-xs font-medium tracking-wider">Custom AI</span>
+                <span className="uppercase text-xs font-semibold tracking-wider">Custom AI Pack</span>
               </div>
               <span
                 className={`w-4 h-4 rounded-md shrink-0 flex items-center justify-center text-[9px] ${
@@ -262,7 +235,7 @@ export function Lobby({ onStartGame }: LobbyProps) {
 
             {/* AI Input appears cleanly below when Custom is active */}
             {isAiPackActive && (
-              <div className="col-span-2 pt-0.5">
+              <div className="py-0.5">
                 <input
                   type="text"
                   value={customTopic}
@@ -275,47 +248,79 @@ export function Lobby({ onStartGame }: LobbyProps) {
             )}
           </div>
 
-          {/* Section: Trending Community Packs (when available) */}
-          {communityPacks.length > 0 && (
-            <div className="space-y-1.5 pt-1">
-              <div className="flex items-center justify-between text-xs font-medium tracking-wider uppercase text-white/70 px-1">
-                <span className="flex items-center gap-1.5 text-discord-green">
-                  <span>🔥 Trending</span>
-                  <span className="text-[10px] text-discord-muted font-normal normal-case">({communityPacks.length})</span>
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-1.5">
-                {communityPacks.map((pack) => {
-                  const isSelected = selectedPackIds.includes(pack.id);
-                  return (
-                    <button
-                      key={pack.id}
-                      onClick={() => handleTogglePack(pack.id)}
-                      title={pack.name}
-                      className={`px-3 py-2.5 rounded-xl text-left text-xs font-medium transition-all flex items-center justify-between border ${
-                        isSelected
-                          ? 'bg-discord-green text-black border-discord-green shadow-float'
-                          : 'bg-discord-surface-indigo/90 hover:bg-discord-surface-indigo text-discord-muted hover:text-white border-white/10'
-                      }`}
-                    >
-                      <span className="truncate pr-1 uppercase text-xs tracking-wider">
-                        {pack.name}
-                      </span>
-                      <span
-                        className={`w-4 h-4 rounded-md shrink-0 flex items-center justify-center text-[9px] ${
+          {/* Clean Scrollable Grid for Trending & Built-in packs to scale smoothly to 20+ packs */}
+          <div className="max-h-60 overflow-y-auto pr-1 space-y-2.5">
+            {/* Trending Community Packs (when available) */}
+            {communityPacks.length > 0 && (
+              <div className="space-y-1.5 pt-1 pb-2.5 border-b border-white/10">
+                <div className="flex items-center justify-between text-xs font-medium tracking-wider uppercase text-white/70 px-1">
+                  <span className="flex items-center gap-1.5 text-discord-green">
+                    <span>🔥 Trending</span>
+                    <span className="text-[10px] text-discord-muted font-normal normal-case">({communityPacks.length})</span>
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {communityPacks.map((pack) => {
+                    const isSelected = selectedPackIds.includes(pack.id);
+                    return (
+                      <button
+                        key={pack.id}
+                        onClick={() => handleTogglePack(pack.id)}
+                        title={pack.name}
+                        className={`px-3 py-2.5 rounded-xl text-left text-xs font-medium transition-all flex items-center justify-between border ${
                           isSelected
-                            ? 'bg-black text-discord-green font-bold'
-                            : 'border border-white/20'
+                            ? 'bg-discord-green text-black border-discord-green shadow-float'
+                            : 'bg-discord-surface-indigo/90 hover:bg-discord-surface-indigo text-discord-muted hover:text-white border-white/10'
                         }`}
                       >
-                        {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
-                      </span>
-                    </button>
-                  );
-                })}
+                        <span className="truncate pr-1 uppercase text-xs tracking-wider">
+                          {pack.name}
+                        </span>
+                        <span
+                          className={`w-4 h-4 rounded-md shrink-0 flex items-center justify-center text-[9px] ${
+                            isSelected
+                              ? 'bg-black text-discord-green font-bold'
+                              : 'border border-white/20'
+                          }`}
+                        >
+                          {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
+            )}
+
+            {/* Built-in Curated Packs */}
+            <div className="grid grid-cols-2 gap-1.5">
+              {BUILT_IN_PACKS.map((pack) => {
+                const isSelected = selectedPackIds.includes(pack.id);
+                return (
+                  <button
+                    key={pack.id}
+                    onClick={() => handleTogglePack(pack.id)}
+                    className={`px-3 py-2.5 rounded-xl text-left text-xs font-medium transition-all flex items-center justify-between border ${
+                      isSelected
+                        ? 'bg-discord-primary text-white border-discord-primary shadow-float'
+                        : 'bg-discord-surface-indigo/90 hover:bg-discord-surface-indigo text-discord-muted hover:text-white border-white/10'
+                    }`}
+                  >
+                    <span className="truncate pr-1 uppercase text-xs tracking-wider">{pack.name}</span>
+                    <span
+                      className={`w-4 h-4 rounded-md shrink-0 flex items-center justify-center text-[9px] ${
+                        isSelected
+                          ? 'bg-white text-discord-primary font-bold'
+                          : 'border border-white/20'
+                      }`}
+                    >
+                      {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
-          )}
+          </div>
 
           {aiError && (
             <div className="text-[11px] text-discord-red flex items-center gap-1 px-1">
