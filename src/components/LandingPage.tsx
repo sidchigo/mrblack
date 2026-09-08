@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Play,
   ShieldAlert,
@@ -75,9 +76,13 @@ export function LandingPage({ onStartInstantPlay }: LandingProps) {
 
         {/* Hero Artwork */}
         <div className="w-full max-w-[280px] sm:max-w-md mx-auto flex items-center justify-center">
-          <img
+          <Image
             src="/hero-banner-mobile.png"
             alt="Mr. Black Desi Social Deduction Characters"
+            width={1024}
+            height={1024}
+            priority
+            sizes="(max-width: 640px) 280px, 448px"
             className="w-full h-auto object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.6)]"
           />
         </div>
