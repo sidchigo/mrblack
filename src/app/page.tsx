@@ -198,13 +198,17 @@ export default function Home() {
         <div className="max-w-md mx-auto flex items-center justify-between">
           <button
             onClick={handleBackToLobby}
-            className="flex items-center gap-2 text-left group"
+            className="flex items-center gap-2.5 text-left group"
           >
-            <div className="w-8 h-8 rounded-xl bg-discord-primary flex items-center justify-center text-white font-extrabold font-discord-headline shadow-float group-hover:scale-105 transition-transform text-sm">
-              MB
+            <div className="w-8 h-8 rounded-xl overflow-hidden border border-white/10 shadow-float group-hover:scale-105 transition-transform bg-discord-surface-indigo/90 shrink-0">
+              <img
+                src="/logo.png"
+                alt="Mr. Black Logo"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
-              <span className="font-extrabold font-discord-headline tracking-tight text-base text-white uppercase">
+              <span className="font-extrabold font-discord-headline tracking-tight text-sm text-white uppercase">
                 MR. <span className="text-discord-primary">BLACK</span>
               </span>
             </div>

@@ -61,10 +61,10 @@ export function PassAndPlayReveal({
       {/* Center Pass Target & Word Surface */}
       <div className="w-full text-center space-y-4 my-auto">
         <div className="space-y-1">
-          <span className="text-[11px] uppercase tracking-widest text-discord-muted font-bold block">
+          <span className="text-[11px] uppercase tracking-widest text-discord-muted font-semibold block font-sans">
             Pass Phone To
           </span>
-          <h1 className="text-4xl sm:text-5xl font-black font-discord-headline text-white uppercase tracking-tight">
+          <h1 className="text-4xl sm:text-5xl font-bold font-discord-headline text-white uppercase tracking-tight">
             {player.name}
           </h1>
         </div>
@@ -86,16 +86,16 @@ export function PassAndPlayReveal({
             <div className="animate-in fade-in zoom-in duration-100 flex flex-col items-center justify-center space-y-2">
               {isMrBlack ? (
                 <div className="space-y-1">
-                  <span className="text-3xl font-black font-discord-headline uppercase tracking-tight text-discord-yellow block">
+                  <span className="text-2xl sm:text-3xl font-bold font-discord-headline uppercase tracking-tight text-discord-yellow block">
                     YOU ARE MR. BLACK
                   </span>
-                  <span className="text-xs text-white/90 font-bold block">
+                  <span className="text-xs text-white/90 font-medium block font-sans">
                     You have NO word. Bluff your way through!
                   </span>
                 </div>
               ) : (
                 <div className="space-y-1">
-                  <span className="text-4xl sm:text-5xl font-black font-discord-headline text-white drop-shadow-md block uppercase">
+                  <span className="text-4xl sm:text-5xl font-bold font-discord-headline text-white drop-shadow-md block uppercase">
                     {player.word}
                   </span>
                 </div>
@@ -104,10 +104,10 @@ export function PassAndPlayReveal({
           ) : (
             <div className="flex flex-col items-center justify-center space-y-2">
               <span className="text-4xl">👆</span>
-              <span className="text-base font-black font-discord-headline text-white uppercase tracking-wide">
+              <span className="text-base font-bold font-discord-headline text-white uppercase tracking-wide">
                 Hold Card To Reveal
               </span>
-              <span className="text-xs text-discord-muted font-semibold">
+              <span className="text-xs text-discord-muted font-medium font-sans">
                 Release to hide and pass to next
               </span>
             </div>

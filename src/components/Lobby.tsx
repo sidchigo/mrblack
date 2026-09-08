@@ -164,22 +164,35 @@ export function Lobby({ onStartGame }: LobbyProps) {
   const allBuiltInAndCommunityPacks = [...BUILT_IN_PACKS, ...communityPacks];
 
   return (
-    <div className="w-full max-w-sm mx-auto space-y-4 select-none pb-4">
-      {/* 1. Top Hero Title */}
-      <div className="text-center pt-1">
-        <h1 className="text-4xl font-black font-discord-headline tracking-tight text-white uppercase">
-          MR. <span className="text-discord-primary">BLACK</span>
-        </h1>
-        <p className="text-[11px] text-discord-muted font-medium pt-0.5">
-          Pass &amp; Play Desi Social Deduction Game
-        </p>
+    <div className="w-full max-w-sm mx-auto space-y-6 select-none pb-6">
+      {/* 1. Seamless Hero Section (Transparent Image directly above text) */}
+      <div className="text-center space-y-3 pt-2">
+        {/* Transparent 3D Character Artwork */}
+        <div className="w-full max-w-[290px] mx-auto flex items-center justify-center">
+          <img
+            src="/hero-banner-mobile.png"
+            alt="Mr. Black Desi Characters"
+            className="w-full h-auto object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.5)]"
+          />
+        </div>
+
+        {/* Hero Headline & Subtitle */}
+        <div className="space-y-1.5 px-2">
+          <h1 className="text-2xl sm:text-3xl font-bold font-discord-headline text-white uppercase leading-[1.15] tracking-tight">
+            IDENTIFY THE IMPOSTER, <span className="text-discord-primary">DESI-STYLE!</span>
+          </h1>
+
+          <p className="text-xs text-discord-muted font-medium leading-relaxed max-w-xs mx-auto">
+            A fun desi twist on Mr. White, packed with Bollywood, Chai &amp; Indian pop-culture word packs.
+          </p>
+        </div>
       </div>
 
       {/* 2. Main Game Setup Surface (Single Unified Flow) */}
-      <div className="space-y-4">
+      <div className="space-y-4 font-sans">
         {/* Section: Word Categories */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs font-black font-discord-headline uppercase text-white/90 px-1">
+          <div className="flex items-center justify-between text-xs font-medium tracking-wider uppercase text-white/70 px-1">
             <span>1. Word Packs ({selectedPackIds.length + (isAiPackActive && customTopic.trim() ? 1 : 0)})</span>
             <button
               onClick={() => {
@@ -189,7 +202,7 @@ export function Lobby({ onStartGame }: LobbyProps) {
                   setSelectedPackIds(allBuiltInAndCommunityPacks.map((p) => p.id));
                 }
               }}
-              className="text-[10px] text-discord-primary hover:underline font-bold"
+              className="text-[11px] text-discord-primary hover:underline font-normal normal-case"
             >
               {selectedPackIds.length === allBuiltInAndCommunityPacks.length ? 'Reset' : 'Select All'}
             </button>
@@ -203,17 +216,17 @@ export function Lobby({ onStartGame }: LobbyProps) {
                 <button
                   key={pack.id}
                   onClick={() => handleTogglePack(pack.id)}
-                  className={`px-3 py-2.5 rounded-xl text-left text-xs font-bold transition-all flex items-center justify-between border ${
+                  className={`px-3 py-2.5 rounded-xl text-left text-xs font-medium transition-all flex items-center justify-between border ${
                     isSelected
                       ? 'bg-discord-primary text-white border-discord-primary shadow-float'
                       : 'bg-discord-surface-indigo/90 hover:bg-discord-surface-indigo text-discord-muted hover:text-white border-white/10'
                   }`}
                 >
-                  <span className="truncate pr-1 font-discord-headline tracking-wide uppercase text-xs">{pack.name}</span>
+                  <span className="truncate pr-1 uppercase text-xs tracking-wider">{pack.name}</span>
                   <span
                     className={`w-4 h-4 rounded-md shrink-0 flex items-center justify-center text-[9px] ${
                       isSelected
-                        ? 'bg-white text-discord-primary font-black'
+                        ? 'bg-white text-discord-primary font-bold'
                         : 'border border-white/20'
                     }`}
                   >
@@ -223,10 +236,10 @@ export function Lobby({ onStartGame }: LobbyProps) {
               );
             })}
 
-            {/* Custom AI Pack Card - Sits cleanly as a pack card */}
+            {/* Custom AI Pack Card */}
             <button
               onClick={() => setIsAiPackActive(!isAiPackActive)}
-              className={`px-3 py-2.5 rounded-xl text-left text-xs font-bold transition-all flex items-center justify-between border ${
+              className={`px-3 py-2.5 rounded-xl text-left text-xs font-medium transition-all flex items-center justify-between border ${
                 isAiPackActive
                   ? 'bg-discord-magenta text-white border-discord-magenta shadow-float'
                   : 'bg-discord-surface-indigo/90 hover:bg-discord-surface-indigo text-discord-muted hover:text-white border-white/10'
@@ -234,12 +247,12 @@ export function Lobby({ onStartGame }: LobbyProps) {
             >
               <div className="flex items-center gap-1.5 truncate pr-1">
                 <Sparkles className="w-3.5 h-3.5 text-discord-yellow shrink-0" />
-                <span className="font-discord-headline tracking-wide uppercase text-xs">Custom AI</span>
+                <span className="uppercase text-xs font-medium tracking-wider">Custom AI</span>
               </div>
               <span
                 className={`w-4 h-4 rounded-md shrink-0 flex items-center justify-center text-[9px] ${
                   isAiPackActive
-                    ? 'bg-white text-discord-magenta font-black'
+                    ? 'bg-white text-discord-magenta font-bold'
                     : 'border border-white/20'
                 }`}
               >
@@ -265,10 +278,10 @@ export function Lobby({ onStartGame }: LobbyProps) {
           {/* Section: Trending Community Packs (when available) */}
           {communityPacks.length > 0 && (
             <div className="space-y-1.5 pt-1">
-              <div className="flex items-center justify-between text-xs font-black font-discord-headline uppercase text-white/90 px-1">
+              <div className="flex items-center justify-between text-xs font-medium tracking-wider uppercase text-white/70 px-1">
                 <span className="flex items-center gap-1.5 text-discord-green">
                   <span>🔥 Trending</span>
-                  <span className="text-[10px] text-discord-muted font-normal">({communityPacks.length})</span>
+                  <span className="text-[10px] text-discord-muted font-normal normal-case">({communityPacks.length})</span>
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-1.5">
@@ -279,19 +292,19 @@ export function Lobby({ onStartGame }: LobbyProps) {
                       key={pack.id}
                       onClick={() => handleTogglePack(pack.id)}
                       title={pack.name}
-                      className={`px-3 py-2.5 rounded-xl text-left text-xs font-bold transition-all flex items-center justify-between border ${
+                      className={`px-3 py-2.5 rounded-xl text-left text-xs font-medium transition-all flex items-center justify-between border ${
                         isSelected
                           ? 'bg-discord-green text-black border-discord-green shadow-float'
                           : 'bg-discord-surface-indigo/90 hover:bg-discord-surface-indigo text-discord-muted hover:text-white border-white/10'
                       }`}
                     >
-                      <span className="truncate pr-1 font-discord-headline tracking-wide uppercase text-xs">
+                      <span className="truncate pr-1 uppercase text-xs tracking-wider">
                         {pack.name}
                       </span>
                       <span
                         className={`w-4 h-4 rounded-md shrink-0 flex items-center justify-center text-[9px] ${
                           isSelected
-                            ? 'bg-black text-discord-green font-black'
+                            ? 'bg-black text-discord-green font-bold'
                             : 'border border-white/20'
                         }`}
                       >
@@ -314,9 +327,9 @@ export function Lobby({ onStartGame }: LobbyProps) {
 
         {/* Section: Roles */}
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs font-black font-discord-headline uppercase text-white/90 px-1">
+          <div className="flex items-center justify-between text-xs font-medium tracking-wider uppercase text-white/70 px-1">
             <span>2. Roles</span>
-            <span className="text-[10px] text-discord-muted font-bold">
+            <span className="text-[10px] text-discord-muted font-normal normal-case">
               {totalPlayers} Total
             </span>
           </div>
@@ -325,12 +338,12 @@ export function Lobby({ onStartGame }: LobbyProps) {
             {/* Civilians */}
             <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-discord-surface-indigo/90 border border-white/10 text-xs">
               <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-lg bg-discord-green/20 text-discord-green font-black flex items-center justify-center text-xs font-discord-headline">
+                <span className="w-6 h-6 rounded-lg bg-discord-green/20 text-discord-green font-bold flex items-center justify-center text-xs">
                   C
                 </span>
-                <span className="font-bold text-white">Civilians</span>
+                <span className="font-medium text-white">Civilians</span>
               </div>
-              <span className="font-black font-discord-headline text-discord-green text-sm px-2">
+              <span className="font-bold text-discord-green text-sm px-2">
                 {civilianCount}
               </span>
             </div>
@@ -338,26 +351,34 @@ export function Lobby({ onStartGame }: LobbyProps) {
             {/* Undercover */}
             <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-discord-surface-indigo/90 border border-white/10 text-xs">
               <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-lg bg-discord-magenta/20 text-discord-magenta font-black flex items-center justify-center text-xs font-discord-headline">
+                <span className="w-6 h-6 rounded-lg bg-discord-magenta/20 text-discord-magenta font-bold flex items-center justify-center text-xs">
                   U
                 </span>
-                <span className="font-bold text-white">Undercover</span>
+                <span className="font-medium text-white">Undercover</span>
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setUndercoverCount(Math.max(0, undercoverCount - 1))}
+                  onClick={() => {
+                    if (undercoverCount > 0 && civilianCount + 1 >= 1) {
+                      setUndercoverCount(undercoverCount - 1);
+                    }
+                  }}
                   disabled={undercoverCount <= 0}
-                  className="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-20 text-white font-black flex items-center justify-center text-xs"
+                  className="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 text-white font-semibold flex items-center justify-center text-sm transition-colors"
                 >
                   -
                 </button>
-                <span className="w-3 text-center font-black font-discord-headline text-white text-sm">
+                <span className="font-semibold text-white text-xs w-4 text-center">
                   {undercoverCount}
                 </span>
                 <button
-                  onClick={() => setUndercoverCount(undercoverCount + 1)}
+                  onClick={() => {
+                    if (civilianCount > 1) {
+                      setUndercoverCount(undercoverCount + 1);
+                    }
+                  }}
                   disabled={civilianCount <= 1}
-                  className="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-20 text-white font-black flex items-center justify-center text-xs"
+                  className="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 text-white font-semibold flex items-center justify-center text-sm transition-colors"
                 >
                   +
                 </button>
@@ -367,26 +388,34 @@ export function Lobby({ onStartGame }: LobbyProps) {
             {/* Mr. Black */}
             <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-discord-surface-indigo/90 border border-white/10 text-xs">
               <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-lg bg-discord-yellow/20 text-discord-yellow font-black flex items-center justify-center text-xs font-discord-headline">
+                <span className="w-6 h-6 rounded-lg bg-discord-yellow/20 text-discord-yellow font-bold flex items-center justify-center text-xs">
                   MB
                 </span>
-                <span className="font-bold text-white">Mr. Black</span>
+                <span className="font-medium text-white">Mr. Black</span>
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setMrblackCount(Math.max(0, mrblackCount - 1))}
+                  onClick={() => {
+                    if (mrblackCount > 0 && civilianCount + 1 >= 1) {
+                      setMrblackCount(mrblackCount - 1);
+                    }
+                  }}
                   disabled={mrblackCount <= 0}
-                  className="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-20 text-white font-black flex items-center justify-center text-xs"
+                  className="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 text-white font-semibold flex items-center justify-center text-sm transition-colors"
                 >
                   -
                 </button>
-                <span className="w-3 text-center font-black font-discord-headline text-white text-sm">
+                <span className="font-semibold text-white text-xs w-4 text-center">
                   {mrblackCount}
                 </span>
                 <button
-                  onClick={() => setMrblackCount(mrblackCount + 1)}
+                  onClick={() => {
+                    if (civilianCount > 1) {
+                      setMrblackCount(mrblackCount + 1);
+                    }
+                  }}
                   disabled={civilianCount <= 1}
-                  className="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-20 text-white font-black flex items-center justify-center text-xs"
+                  className="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 text-white font-semibold flex items-center justify-center text-sm transition-colors"
                 >
                   +
                 </button>
@@ -397,11 +426,11 @@ export function Lobby({ onStartGame }: LobbyProps) {
 
         {/* Section: Players */}
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs font-black font-discord-headline uppercase text-white/90 px-1">
+          <div className="flex items-center justify-between text-xs font-medium tracking-wider uppercase text-white/70 px-1">
             <span>3. Players ({players.length})</span>
             <button
               onClick={handleRandomizeNames}
-              className="flex items-center gap-1 text-[10px] text-discord-muted hover:text-white font-bold"
+              className="flex items-center gap-1 text-[11px] text-discord-primary hover:underline font-normal normal-case"
             >
               <Shuffle className="w-3 h-3" />
               Desi Names
@@ -415,7 +444,7 @@ export function Lobby({ onStartGame }: LobbyProps) {
                 key={idx}
                 className="flex items-center gap-2 bg-discord-surface-indigo/90 border border-white/10 px-2.5 py-1.5 rounded-xl"
               >
-                <span className="text-[10px] font-black font-discord-headline text-discord-muted w-4 text-center">
+                <span className="text-[10px] font-medium text-discord-muted w-4 text-center">
                   {idx + 1}
                 </span>
                 <input
@@ -424,7 +453,7 @@ export function Lobby({ onStartGame }: LobbyProps) {
                   onChange={(e) => handlePlayerNameChange(idx, e.target.value)}
                   placeholder={`Player ${idx + 1}`}
                   maxLength={18}
-                  className="flex-1 bg-transparent text-xs font-bold text-white outline-none placeholder:text-discord-muted"
+                  className="flex-1 bg-transparent text-xs font-medium text-white outline-none placeholder:text-discord-muted"
                 />
                 {players.length > 3 && (
                   <button
@@ -447,12 +476,12 @@ export function Lobby({ onStartGame }: LobbyProps) {
               onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer()}
               placeholder="Add player..."
               maxLength={18}
-              className="flex-1 bg-discord-surface-onyx border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder:text-discord-muted outline-none focus:border-discord-primary transition-all"
+              className="flex-1 bg-discord-surface-onyx border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder:text-discord-muted outline-none focus:border-discord-primary transition-all font-medium"
             />
             <button
               onClick={handleAddPlayer}
               disabled={!newPlayerName.trim()}
-              className="bg-discord-primary hover:bg-discord-primary-hover disabled:opacity-30 text-white font-black px-3.5 py-2 rounded-xl text-xs transition-all flex items-center justify-center"
+              className="bg-discord-primary hover:bg-discord-primary-hover disabled:opacity-30 text-white font-medium px-3.5 py-2 rounded-xl text-xs transition-all flex items-center justify-center"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -464,17 +493,17 @@ export function Lobby({ onStartGame }: LobbyProps) {
       <button
         onClick={handleStart}
         disabled={!isValidConfig || aiGenerating}
-        className="w-full bg-discord-green hover:bg-discord-green-hover disabled:opacity-30 text-discord-ink-dark font-black font-discord-headline text-base py-4 px-6 rounded-2xl shadow-float flex items-center justify-center gap-2 transition-all transform active:scale-98 tracking-wide uppercase mt-2"
+        className="w-full bg-discord-green hover:bg-discord-green-hover disabled:opacity-30 text-black font-bold text-sm py-3.5 px-6 rounded-2xl shadow-float flex items-center justify-center gap-2 transition-all transform active:scale-98 tracking-wider uppercase mt-2 font-sans"
       >
         {aiGenerating ? (
           <>
-            <Sparkles className="w-5 h-5 animate-spin" />
+            <Sparkles className="w-4 h-4 animate-spin" />
             <span>Creating AI Pack...</span>
           </>
         ) : (
           <>
             <span>START GAME</span>
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className="w-4 h-4 stroke-[2.5]" />
           </>
         )}
       </button>

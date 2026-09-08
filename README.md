@@ -1,6 +1,6 @@
 # Mr. Black 🎭🕵️
 
-A sleek, fast, and fun **Desi Party Game** inspired by "Undercover" and "Mr. White", designed for friends, families, and teams. Built with **Next.js 14**, styled according to the **Discord Design System (`DESIGN.md`)**, with OpenAI-compatible AI category pack generation and Upstash Redis rate limiting and deduplication.
+A sleek, fast, and fun **Desi Party Game** inspired by "Undercover" and "Mr. White", designed for friends, families, and teams. Built with **Next.js 14**, styled with modern sleek gaming aesthetics, with OpenAI-compatible AI category pack generation and Upstash Redis rate limiting and deduplication.
 
 ---
 
@@ -8,7 +8,7 @@ A sleek, fast, and fun **Desi Party Game** inspired by "Undercover" and "Mr. Whi
 - **Pass-and-Play Friendly**: Play seamlessly on a single mobile or desktop device.
 - **Rich Desi Curated Packs**: Includes Bollywood, Chai & Street Food, Cricket Mania, Shaadi & Festivals, Tech & Office Life, and Indian Travel.
 - **AI Custom Packs**: Generate custom Indian word pairs on the fly with any OpenAI-compatible endpoint (OpenAI, Groq, OpenRouter).
-- **Discord Design Aesthetics**: Dark gaming theme, Blurple (#5865F2) & Magenta highlights, animated mesh gradients, and smooth cards.
+- **Sleek Aesthetics**: Dark theme, Blurple (#5865F2) & Magenta highlights, animated mesh gradients, and smooth cards.
 - **Smart Redis Dedup & Rate Limiting**: Zero-TTL cached packs to save AI tokens, plus per-IP and global rate limiting.
 - **Mr. Black Guess Climax**: If Mr. Black gets voted out, they get one final chance to guess the secret word and hijack the victory!
 
