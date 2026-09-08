@@ -9,12 +9,14 @@ import {
   ArrowRight,
   AlertCircle,
   Check,
+  WifiOff,
 } from 'lucide-react';
 import { BUILT_IN_PACKS } from '@/lib/game/packs';
 import { GameSettings, Pack } from '@/types/game';
 
 interface LobbyProps {
   onStartGame: (settings: GameSettings, customPack?: Pack | Pack[]) => void;
+  initialPackIds?: string[];
 }
 
 const DEFAULT_NAMES = [
@@ -30,7 +32,7 @@ const DEFAULT_NAMES = [
   'Sneha',
 ];
 
-export function Lobby({ onStartGame }: LobbyProps) {
+export function Lobby({ onStartGame, initialPackIds }: LobbyProps) {
   const [players, setPlayers] = React.useState<string[]>([
     'Rahul',
     'Pooja',
@@ -42,17 +44,45 @@ export function Lobby({ onStartGame }: LobbyProps) {
   const [undercoverCount, setUndercoverCount] = React.useState(1);
   const [mrblackCount, setMrblackCount] = React.useState(1);
 
-  // Selected packs list (multi-select)
-  const [selectedPackIds, setSelectedPackIds] = React.useState<string[]>([
-    BUILT_IN_PACKS[0].id,
-    BUILT_IN_PACKS[1].id,
-  ]);
+  // Network online/offline status detection
+  const [isOnline, setIsOnline] = React.useState<boolean>(true);
+
+  React.useEffect(() => {
+    setIsOnline(navigator.onLine);
+
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Selected packs list (multi-select) initialized with optional preselected pack IDs or defaults
+  const [selectedPackIds, setSelectedPackIds] = React.useState<string[]>(() => {
+    if (initialPackIds && initialPackIds.length > 0) {
+      return initialPackIds;
+    }
+    return [BUILT_IN_PACKS[0].id, BUILT_IN_PACKS[1].id];
+  });
+
+  // Update if initialPackIds changes
+  React.useEffect(() => {
+    if (initialPackIds && initialPackIds.length > 0) {
+      setSelectedPackIds(initialPackIds);
+    }
+  }, [initialPackIds]);
 
   // Community / AI Generated Packs from Redis
   const [communityPacks, setCommunityPacks] = React.useState<Pack[]>([]);
 
-  // Fetch recent community packs on mount
+  // Fetch recent community packs on mount (only when online)
   React.useEffect(() => {
+    if (!isOnline) return;
     fetch('/api/packs/recent')
       .then((res) => res.json())
       .then((data) => {
@@ -61,7 +91,7 @@ export function Lobby({ onStartGame }: LobbyProps) {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [isOnline]);
 
   // AI custom pack
   const [customTopic, setCustomTopic] = React.useState('');
@@ -72,12 +102,12 @@ export function Lobby({ onStartGame }: LobbyProps) {
   const totalPlayers = players.length;
   const civilianCount = totalPlayers - undercoverCount - mrblackCount;
   const hasValidImpostor = undercoverCount > 0 || mrblackCount > 0;
-  const hasSelectedPacks = selectedPackIds.length > 0 || (isAiPackActive && customTopic.trim().length > 0);
+  const hasSelectedPacks = selectedPackIds.length > 0 || (isAiPackActive && isOnline && customTopic.trim().length > 0);
   const isValidConfig = totalPlayers >= 3 && civilianCount >= 1 && hasValidImpostor && hasSelectedPacks;
 
   const handleTogglePack = (packId: string) => {
     if (selectedPackIds.includes(packId)) {
-      if (selectedPackIds.length > 1 || isAiPackActive) {
+      if (selectedPackIds.length > 1 || (isAiPackActive && isOnline)) {
         setSelectedPackIds(selectedPackIds.filter((id) => id !== packId));
       }
     } else {
@@ -116,7 +146,7 @@ export function Lobby({ onStartGame }: LobbyProps) {
   const handleStart = async () => {
     if (!isValidConfig) return;
 
-    if (isAiPackActive && customTopic.trim()) {
+    if (isOnline && isAiPackActive && customTopic.trim()) {
       setAiGenerating(true);
       setAiError(null);
 
@@ -156,111 +186,135 @@ export function Lobby({ onStartGame }: LobbyProps) {
           mrblackCount,
           selectedPackIds,
         },
-        communityPacks
+        isOnline ? communityPacks : []
       );
     }
   };
 
-  const allBuiltInAndCommunityPacks = [...BUILT_IN_PACKS, ...communityPacks];
+  const allAvailablePacks = isOnline ? [...BUILT_IN_PACKS, ...communityPacks] : BUILT_IN_PACKS;
+
+  // Sort built-in packs so that selected packs always display first in the list
+  const sortedBuiltInPacks = React.useMemo(() => {
+    return [...BUILT_IN_PACKS].sort((a, b) => {
+      const aSelected = selectedPackIds.includes(a.id);
+      const bSelected = selectedPackIds.includes(b.id);
+      if (aSelected && !bSelected) return -1;
+      if (!aSelected && bSelected) return 1;
+      return 0;
+    });
+  }, [selectedPackIds]);
+
+  // Sort trending community packs so that selected trending packs always display first
+  const sortedTrendingPacks = React.useMemo(() => {
+    return [...communityPacks].sort((a, b) => {
+      const aSelected = selectedPackIds.includes(a.id);
+      const bSelected = selectedPackIds.includes(b.id);
+      if (aSelected && !bSelected) return -1;
+      if (!aSelected && bSelected) return 1;
+      return 0;
+    });
+  }, [communityPacks, selectedPackIds]);
 
   return (
-    <div className="w-full max-w-sm mx-auto space-y-6 select-none pb-6">
-      {/* 1. Seamless Hero Section (Transparent Image directly above text) */}
-      <div className="text-center space-y-3 pt-2">
-        {/* Transparent 3D Character Artwork */}
-        <div className="w-full max-w-[290px] mx-auto flex items-center justify-center">
-          <img
-            src="/hero-banner-mobile.png"
-            alt="Mr. Black Desi Characters"
-            className="w-full h-auto object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.5)]"
-          />
-        </div>
-
-        {/* Hero Headline & Subtitle */}
-        <div className="space-y-1.5 px-2">
-          <h1 className="text-2xl sm:text-3xl font-bold font-discord-headline text-white uppercase leading-[1.15] tracking-tight">
-            IDENTIFY THE IMPOSTER, <span className="text-discord-primary">DESI-STYLE!</span>
-          </h1>
-
-          <p className="text-xs text-discord-muted font-medium leading-relaxed max-w-xs mx-auto">
-            A fun desi twist on Mr. White, packed with Bollywood, Chai &amp; Indian pop-culture word packs.
-          </p>
-        </div>
+    <div className="w-full max-w-sm mx-auto space-y-4 select-none pb-4 pt-1">
+      {/* 1. Minimal Header (Clean, concise & game-focused) */}
+      <div className="text-center space-y-1">
+        <h1 className="text-xl sm:text-2xl font-bold font-discord-headline text-white uppercase tracking-tight">
+          GAME SETUP
+        </h1>
+        <p className="text-xs text-discord-muted font-medium">
+          Choose word packs and players to start.
+        </p>
       </div>
 
-      {/* 2. Main Game Setup Surface (Single Unified Flow) */}
+      {/* Offline Banner Indicator if offline */}
+      {!isOnline && (
+        <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-discord-surface-indigo/90 border border-white/10 text-xs text-discord-yellow">
+          <div className="flex items-center gap-1.5">
+            <WifiOff className="w-4 h-4" />
+            <span className="font-semibold">Offline Mode Active</span>
+          </div>
+          <span className="text-[10px] text-discord-muted">All 15+ Packs Ready</span>
+        </div>
+      )}
+
+      {/* 2. Main Game Setup Surface */}
       <div className="space-y-4 font-sans">
         {/* Section: Word Categories */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs font-medium tracking-wider uppercase text-white/70 px-1">
-            <span>1. Word Packs ({selectedPackIds.length + (isAiPackActive && customTopic.trim() ? 1 : 0)})</span>
+            <span>
+              1. Word Packs ({selectedPackIds.length + (isOnline && isAiPackActive && customTopic.trim() ? 1 : 0)})
+            </span>
             <button
               onClick={() => {
-                if (selectedPackIds.length === allBuiltInAndCommunityPacks.length) {
+                if (selectedPackIds.length === allAvailablePacks.length) {
                   setSelectedPackIds([BUILT_IN_PACKS[0].id]);
                 } else {
-                  setSelectedPackIds(allBuiltInAndCommunityPacks.map((p) => p.id));
+                  setSelectedPackIds(allAvailablePacks.map((p) => p.id));
                 }
               }}
               className="text-[11px] text-discord-primary hover:underline font-normal normal-case"
             >
-              {selectedPackIds.length === allBuiltInAndCommunityPacks.length ? 'Reset' : 'Select All'}
+              {selectedPackIds.length === allAvailablePacks.length ? 'Reset' : 'Select All'}
             </button>
           </div>
 
-          {/* Custom AI Pack Card (Always prominent at top) */}
-          <div className="space-y-1.5">
-            <button
-              onClick={() => setIsAiPackActive(!isAiPackActive)}
-              className={`w-full px-3 py-2.5 rounded-xl text-left text-xs font-medium transition-all flex items-center justify-between border ${
-                isAiPackActive
-                  ? 'bg-discord-magenta text-white border-discord-magenta shadow-float'
-                  : 'bg-discord-surface-indigo/90 hover:bg-discord-surface-indigo text-discord-muted hover:text-white border-white/10'
-              }`}
-            >
-              <div className="flex items-center gap-1.5 truncate pr-1">
-                <Sparkles className="w-3.5 h-3.5 text-discord-yellow shrink-0" />
-                <span className="uppercase text-xs font-semibold tracking-wider">Custom AI Pack</span>
-              </div>
-              <span
-                className={`w-4 h-4 rounded-md shrink-0 flex items-center justify-center text-[9px] ${
+          {/* Custom AI Pack Card (Shown ONLY when online) */}
+          {isOnline && (
+            <div className="space-y-1.5">
+              <button
+                onClick={() => setIsAiPackActive(!isAiPackActive)}
+                className={`w-full px-3 py-2.5 rounded-xl text-left text-xs font-medium transition-all flex items-center justify-between border ${
                   isAiPackActive
-                    ? 'bg-white text-discord-magenta font-bold'
-                    : 'border border-white/20'
+                    ? 'bg-discord-magenta text-white border-discord-magenta shadow-float'
+                    : 'bg-discord-surface-indigo/90 hover:bg-discord-surface-indigo text-discord-muted hover:text-white border-white/10'
                 }`}
               >
-                {isAiPackActive && <Check className="w-3 h-3 stroke-[3]" />}
-              </span>
-            </button>
+                <div className="flex items-center gap-1.5 truncate pr-1">
+                  <Sparkles className="w-3.5 h-3.5 text-discord-yellow shrink-0" />
+                  <span className="uppercase text-xs font-semibold tracking-wider">Custom AI Pack</span>
+                </div>
+                <span
+                  className={`w-4 h-4 rounded-md shrink-0 flex items-center justify-center text-[9px] ${
+                    isAiPackActive
+                      ? 'bg-white text-discord-magenta font-bold'
+                      : 'border border-white/20'
+                  }`}
+                >
+                  {isAiPackActive && <Check className="w-3 h-3 stroke-[3]" />}
+                </span>
+              </button>
 
-            {/* AI Input appears cleanly below when Custom is active */}
-            {isAiPackActive && (
-              <div className="py-0.5">
-                <input
-                  type="text"
-                  value={customTopic}
-                  onChange={(e) => setCustomTopic(e.target.value)}
-                  placeholder="Enter custom topic (e.g. Shark Tank, Gully Cricket...)"
-                  autoFocus
-                  className="w-full bg-discord-surface-darker border border-discord-magenta/50 rounded-xl px-3 py-2 text-xs text-white placeholder:text-discord-muted outline-none font-medium"
-                />
-              </div>
-            )}
-          </div>
+              {/* AI Input appears cleanly below when Custom is active */}
+              {isAiPackActive && (
+                <div className="py-0.5">
+                  <input
+                    type="text"
+                    value={customTopic}
+                    onChange={(e) => setCustomTopic(e.target.value)}
+                    placeholder="Enter custom topic (e.g. Shark Tank, Gully Cricket...)"
+                    autoFocus
+                    className="w-full bg-discord-surface-darker border border-discord-magenta/50 rounded-xl px-3 py-2 text-xs text-white placeholder:text-discord-muted outline-none font-medium"
+                  />
+                </div>
+              )}
+            </div>
+          )}
 
-          {/* Clean Scrollable Grid for Trending & Built-in packs to scale smoothly to 20+ packs */}
+          {/* Clean Scrollable Grid for Trending & Built-in packs */}
           <div className="max-h-60 overflow-y-auto pr-1 space-y-2.5">
-            {/* Trending Community Packs (when available) */}
-            {communityPacks.length > 0 && (
+            {/* Trending Community Packs (Selected packs sorted first) */}
+            {isOnline && sortedTrendingPacks.length > 0 && (
               <div className="space-y-1.5 pt-1 pb-2.5 border-b border-white/10">
                 <div className="flex items-center justify-between text-xs font-medium tracking-wider uppercase text-white/70 px-1">
                   <span className="flex items-center gap-1.5 text-discord-green">
                     <span>🔥 Trending</span>
-                    <span className="text-[10px] text-discord-muted font-normal normal-case">({communityPacks.length})</span>
+                    <span className="text-[10px] text-discord-muted font-normal normal-case">({sortedTrendingPacks.length})</span>
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-1.5">
-                  {communityPacks.map((pack) => {
+                  {sortedTrendingPacks.map((pack) => {
                     const isSelected = selectedPackIds.includes(pack.id);
                     return (
                       <button
@@ -292,9 +346,9 @@ export function Lobby({ onStartGame }: LobbyProps) {
               </div>
             )}
 
-            {/* Built-in Curated Packs */}
+            {/* Built-in Curated Packs (Selected packs sorted to the top) */}
             <div className="grid grid-cols-2 gap-1.5">
-              {BUILT_IN_PACKS.map((pack) => {
+              {sortedBuiltInPacks.map((pack) => {
                 const isSelected = selectedPackIds.includes(pack.id);
                 return (
                   <button
@@ -498,7 +552,7 @@ export function Lobby({ onStartGame }: LobbyProps) {
       <button
         onClick={handleStart}
         disabled={!isValidConfig || aiGenerating}
-        className="w-full bg-discord-green hover:bg-discord-green-hover disabled:opacity-30 text-black font-bold text-sm py-3.5 px-6 rounded-2xl shadow-float flex items-center justify-center gap-2 transition-all transform active:scale-98 tracking-wider uppercase mt-2 font-sans"
+        className="w-full bg-discord-green hover:bg-discord-green-hover disabled:opacity-30 text-black font-bold text-sm py-3.5 px-6 rounded-xl shadow-float flex items-center justify-center gap-2 transition-all transform active:scale-98 tracking-wider uppercase mt-2 font-sans"
       >
         {aiGenerating ? (
           <>
