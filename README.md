@@ -52,4 +52,10 @@ Open [http://localhost:3000](http://localhost:3000) to start playing!
 ---
 
 ## 🤝 Community & Contributions
-Word pairs and packs are open for community additions! Check [`src/lib/game/packs.ts`](./src/lib/game/packs.ts) to contribute new desi word pairs.
+Word pairs and packs are open for community additions! We welcome PRs for new Desi packs, pop-culture themes, and word pairs.
+See [**`CONTRIBUTING.md`**](./CONTRIBUTING.md) for a step-by-step guide on adding packs and submitting PRs.
+
+---
+
+## 📄 License
+This project is licensed under the [PolyForm Noncommercial License 1.0.0](./LICENSE). Free for personal, party, community, and non-commercial gameplay. Commercial monetization and paywalled pack features are reserved by the project maintainers.

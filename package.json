@@ -12,7 +12,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "type": "commonjs",
   "dependencies": {
     "@upstash/redis": "^1.38.4",
