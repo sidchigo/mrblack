@@ -35,9 +35,10 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ['"Space Grotesk"', '"Changa One"', '"Impact"', 'system-ui', 'sans-serif'],
-        ginto: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
-        body: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
+        body: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['"Changa One"', 'system-ui', 'sans-serif'],
+        headline: ['"Changa One"', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         xs: "6px",
