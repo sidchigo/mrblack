@@ -86,16 +86,41 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Column 4: Quick Details */}
+          {/* Column 4: Project & Community */}
           <div className="space-y-2.5">
             <div className="text-[11px] font-bold text-white uppercase tracking-wider font-discord-headline">
-              Features
+              About &amp; Project
             </div>
             <ul className="space-y-2 text-discord-muted">
-              <li className="text-white/80">No sign up or account</li>
-              <li className="text-white/80">1 Phone Pass &amp; Play</li>
-              <li className="text-white/80">100% Free &amp; Offline Ready</li>
-              <li className="text-white/80">AI Custom Pack Generator</li>
+              <li>
+                <Link href="/about" className="hover:text-white transition-colors">
+                  About Mr. Black
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/sidchigo/mrblack"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-discord-link transition-colors inline-flex items-center gap-1"
+                >
+                  <span>GitHub Repository</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white font-mono">v1.0</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/sidchigo/mrblack/blob/main/CONTRIBUTING.md"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
+                  Contribute Word Packs
+                </a>
+              </li>
+              <li>
+                <span className="text-white/80">100% Free &amp; Offline Ready</span>
+              </li>
             </ul>
           </div>
         </div>
@@ -105,7 +130,16 @@ export function Footer() {
           <div>
             &copy; {new Date().getFullYear()} Mr. Black. Inspired by Undercover &amp; Mr. White social deduction party games.
           </div>
-          <div className="flex items-center gap-1 text-white/80 font-medium">
+          <div className="flex items-center gap-4 text-white/80 font-medium">
+            <a
+              href="https://github.com/sidchigo/mrblack"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white text-discord-muted transition-colors flex items-center gap-1.5"
+            >
+              <span>GitHub</span>
+            </a>
+            <span>•</span>
             <span>Made with ❤️ for Game nights &amp; days 😏</span>
           </div>
         </div>

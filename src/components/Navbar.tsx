@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Play, BookOpen, Layers, Menu, X } from 'lucide-react';
+import { Play, BookOpen, Layers, Info, Menu, X } from 'lucide-react';
 import { InstallPwaButton } from '@/components/InstallPwaButton';
 
 export function Navbar() {
@@ -14,6 +14,7 @@ export function Navbar() {
     { href: '/play', label: 'Play Game', icon: Play, highlight: true },
     { href: '/how-to-play', label: 'How to Play', icon: BookOpen },
     { href: '/words', label: 'Word Lists', icon: Layers },
+    { href: '/about', label: 'About', icon: Info },
   ];
 
   return (
