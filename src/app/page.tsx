@@ -198,23 +198,16 @@ export default function Home() {
         <div className="max-w-md mx-auto flex items-center justify-between">
           <button
             onClick={handleBackToLobby}
-            className="flex items-center gap-3 text-left group transition-all"
+            className="flex items-center gap-2.5 text-left group transition-all"
           >
-            <div className="w-11 h-11 rounded-2xl p-1 overflow-hidden border border-white/20 shadow-float group-hover:scale-105 group-hover:border-discord-primary/60 transition-all bg-[#0a0d3a] shrink-0 flex items-center justify-center">
-              <img
-                src="/logo.png"
-                alt="Mr. Black Logo"
-                className="w-full h-full object-contain drop-shadow-md"
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold font-discord-headline tracking-wider text-lg sm:text-xl text-white uppercase leading-none drop-shadow-sm">
-                MR. <span className="text-[#818cf8] font-black drop-shadow-[0_0_12px_rgba(129,140,248,0.5)]">BLACK</span>
-              </span>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-discord-muted font-sans pt-0.5">
-                Party Game
-              </span>
-            </div>
+            <img
+              src="/logo.png"
+              alt="Mr. Black Logo"
+              className="w-9 h-9 sm:w-10 sm:h-10 object-contain drop-shadow-md group-hover:scale-105 transition-transform"
+            />
+            <span className="font-extrabold font-discord-headline tracking-wide text-lg sm:text-xl text-white uppercase leading-none">
+              MR. BLACK
+            </span>
           </button>
 
           <div className="flex items-center gap-2">
