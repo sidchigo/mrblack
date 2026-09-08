@@ -3,7 +3,8 @@ import { getRandomPairFromPacks, BUILT_IN_PACKS } from './packs';
 
 export function initializeGame(
   settings: GameSettings,
-  customPacks?: Pack | Pack[]
+  customPacks?: Pack | Pack[],
+  previousGameState?: GameState | null
 ): GameState {
   const extraPacks: Pack[] = Array.isArray(customPacks)
     ? customPacks
@@ -25,7 +26,9 @@ export function initializeGame(
     chosenPacks = [BUILT_IN_PACKS[0]];
   }
 
-  const { pair, pack } = getRandomPairFromPacks(chosenPacks);
+  // Prevent immediate repetition of previous word pair
+  const excludeWord = previousGameState?.activePair?.a;
+  const { pair, pack } = getRandomPairFromPacks(chosenPacks, excludeWord);
 
   const totalPlayers = settings.players.length;
   const undercoverCount = settings.undercoverCount;
@@ -39,15 +42,48 @@ export function initializeGame(
     ...Array(mrblackCount).fill('mrblack'),
   ];
 
-  // Fisher-Yates Shuffle roles
-  for (let i = roles.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [roles[i], roles[j]] = [roles[j], roles[i]];
+  // Helper to shuffle array with Fisher-Yates
+  const shuffle = <T>(array: T[]): T[] => {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+
+  let shuffledRoles = shuffle(roles);
+
+  // If there was a previous game and enough civilian slots exist,
+  // try up to 30 shuffles to avoid assigning special roles (undercover / mrblack)
+  // to the EXACT same player who had a special role in the immediately preceding game.
+  if (previousGameState && civilianCount >= undercoverCount + mrblackCount) {
+    const previousImpostorNames = new Set(
+      previousGameState.players
+        .filter((p) => p.role === 'undercover' || p.role === 'mrblack')
+        .map((p) => p.name.trim().toLowerCase())
+    );
+
+    if (previousImpostorNames.size > 0) {
+      for (let attempt = 0; attempt < 30; attempt++) {
+        const candidate = shuffle(roles);
+        // Check if any previous impostor gets an impostor role again
+        const hasImmediateRepeat = candidate.some((role, idx) => {
+          const playerName = (settings.players[idx] || '').trim().toLowerCase();
+          return (role === 'undercover' || role === 'mrblack') && previousImpostorNames.has(playerName);
+        });
+
+        if (!hasImmediateRepeat) {
+          shuffledRoles = candidate;
+          break;
+        }
+      }
+    }
   }
 
   // Create Player entities
   const players: Player[] = settings.players.map((name, index) => {
-    const role = roles[index];
+    const role = shuffledRoles[index];
     let word: string | null = null;
     if (role === 'civilian') {
       word = pair.a;

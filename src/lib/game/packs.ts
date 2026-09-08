@@ -1,4 +1,4 @@
-import { Pack } from '@/types/game';
+import { Pack, WordPair } from '@/types/game';
 
 export const BUILT_IN_PACKS: Pack[] = [
   {
@@ -121,13 +121,35 @@ export const BUILT_IN_PACKS: Pack[] = [
   },
 ];
 
-export function getRandomPairFromPacks(packs: Pack[]): { pair: { a: string; b: string }; pack: Pack } {
+export function getRandomPairFromPacks(
+  packs: Pack[],
+  excludeWord?: string
+): { pair: { a: string; b: string }; pack: Pack } {
   if (!packs || packs.length === 0) {
     packs = [BUILT_IN_PACKS[0]];
   }
-  const chosenPack = packs[Math.floor(Math.random() * packs.length)];
-  const index = Math.floor(Math.random() * chosenPack.pairs.length);
-  const pair = chosenPack.pairs[index];
+
+  // Collect all available pairs across selected packs
+  const candidatePairs: { pair: WordPair; pack: Pack }[] = [];
+  packs.forEach((pack) => {
+    pack.pairs.forEach((p) => {
+      candidatePairs.push({ pair: p, pack });
+    });
+  });
+
+  // Filter out recently used word pair if more than 1 pair exists
+  let eligible = candidatePairs;
+  if (excludeWord && candidatePairs.length > 1) {
+    const filtered = candidatePairs.filter(
+      (item) => item.pair.a !== excludeWord && item.pair.b !== excludeWord
+    );
+    if (filtered.length > 0) {
+      eligible = filtered;
+    }
+  }
+
+  const selected = eligible[Math.floor(Math.random() * eligible.length)];
+  const { pair, pack } = selected;
 
   // Randomly swap a and b so civilians and undercovers aren't predictable
   const finalPair =
@@ -135,9 +157,9 @@ export function getRandomPairFromPacks(packs: Pack[]): { pair: { a: string; b: s
       ? { a: pair.a, b: pair.b }
       : { a: pair.b, b: pair.a };
 
-  return { pair: finalPair, pack: chosenPack };
+  return { pair: finalPair, pack };
 }
 
-export function getRandomPairFromPack(pack: Pack): { a: string; b: string } {
-  return getRandomPairFromPacks([pack]).pair;
+export function getRandomPairFromPack(pack: Pack, excludeWord?: string): { a: string; b: string } {
+  return getRandomPairFromPacks([pack], excludeWord).pair;
 }

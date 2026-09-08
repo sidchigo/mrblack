@@ -183,7 +183,7 @@ export default function Home() {
   // 6. Replay Handlers
   const handlePlayAgainSame = () => {
     if (!gameState) return;
-    const newGame = initializeGame(gameState.settings, customGeneratedPacks);
+    const newGame = initializeGame(gameState.settings, customGeneratedPacks, gameState);
     setGameState(newGame);
   };
 
