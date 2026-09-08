@@ -26,7 +26,7 @@ export function EliminationModal({ player, onContinue }: EliminationModalProps) 
   };
 
   return (
-    <div className="fixed inset-0 w-screen h-screen z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-150">
+    <div className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-full h-full min-h-dvh !m-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-150">
       <div className="bg-discord-surface-indigo border border-white/15 rounded-3xl p-6 max-w-xs w-full text-center space-y-4 shadow-card my-auto">
         <span className="text-[11px] font-black uppercase tracking-widest text-discord-muted">
           Elimination Result

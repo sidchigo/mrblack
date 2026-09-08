@@ -7,7 +7,7 @@ export function HowToPlayModal({ isOpen, onClose }: { isOpen: boolean; onClose: 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 w-screen h-screen z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-full h-full min-h-dvh !m-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
       <div className="bg-discord-surface-indigo border border-white/15 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative my-auto">
         <button
           onClick={onClose}

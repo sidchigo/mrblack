@@ -36,19 +36,19 @@ export function VotingPhase({
     <div className="w-full max-w-sm mx-auto px-4 py-4 space-y-4 select-none">
       {/* Header */}
       <div className="text-center space-y-1">
-        <span className="text-[11px] font-black uppercase tracking-widest text-discord-red bg-discord-red/20 border border-discord-red/40 px-3 py-0.5 rounded-full">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-discord-red bg-discord-red/20 border border-discord-red/40 px-3 py-0.5 rounded-full font-sans">
           Discussion &amp; Vote
         </span>
-        <h1 className="text-3xl sm:text-4xl font-black font-discord-headline text-white uppercase tracking-tight pt-0.5">
+        <h1 className="text-3xl sm:text-4xl font-bold font-discord-headline text-white uppercase tracking-tight pt-0.5">
           Who Is Out?
         </h1>
-        <p className="text-xs text-discord-muted font-medium">
+        <p className="text-xs text-discord-muted font-normal font-sans">
           Debate clues, then tap a player to eliminate
         </p>
       </div>
 
       {/* Alive Player List */}
-      <div className="space-y-1.5">
+      <div className="space-y-1.5 font-sans">
         {alivePlayers.map((player) => {
           const isSelected = selectedPlayer?.id === player.id;
           return (
@@ -66,17 +66,17 @@ export function VotingPhase({
                 className="flex items-center gap-2.5 flex-1 text-left font-bold"
               >
                 <span
-                  className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black font-discord-headline ${
+                  className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold ${
                     isSelected ? 'bg-discord-red text-white' : 'bg-discord-surface-onyx text-discord-muted'
                   }`}
                 >
                   {player.name[0].toUpperCase()}
                 </span>
-                <span className="text-sm font-discord-headline tracking-wide uppercase text-white">
+                <span className="text-sm font-semibold text-white">
                   {player.name}
                 </span>
                 {isSelected && (
-                  <span className="text-[10px] uppercase font-black tracking-wider bg-discord-red text-white px-2 py-0.5 rounded-md ml-auto mr-2">
+                  <span className="text-[10px] uppercase font-bold tracking-wider bg-discord-red text-white px-2 py-0.5 rounded-md ml-auto mr-2">
                     VOTED
                   </span>
                 )}
@@ -115,7 +115,7 @@ export function VotingPhase({
 
       {/* Peek Word Modal */}
       {peekingPlayer && (
-        <div className="fixed inset-0 w-screen h-screen z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-150">
+        <div className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-full h-full min-h-dvh !m-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-150">
           <div className="bg-discord-surface-indigo border border-white/15 rounded-3xl p-6 max-w-xs w-full text-center space-y-4 shadow-card my-auto">
             <span className="text-[11px] font-black uppercase tracking-widest text-discord-primary">
               Peek Word • {peekingPlayer.name}
