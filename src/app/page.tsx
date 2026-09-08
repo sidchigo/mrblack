@@ -194,22 +194,25 @@ export default function Home() {
   return (
     <main className="min-h-screen flex flex-col justify-between">
       {/* Top Navbar */}
-      <header className="border-b border-white/10 bg-discord-surface-indigo/60 backdrop-blur-md px-4 py-3 sticky top-0 z-40">
+      <header className="border-b border-white/10 bg-discord-surface-indigo/80 backdrop-blur-md px-4 py-3.5 sticky top-0 z-40 shadow-sm">
         <div className="max-w-md mx-auto flex items-center justify-between">
           <button
             onClick={handleBackToLobby}
-            className="flex items-center gap-2.5 text-left group"
+            className="flex items-center gap-3 text-left group transition-all"
           >
-            <div className="w-8 h-8 rounded-xl overflow-hidden border border-white/10 shadow-float group-hover:scale-105 transition-transform bg-discord-surface-indigo/90 shrink-0">
+            <div className="w-11 h-11 rounded-2xl p-1 overflow-hidden border border-white/20 shadow-float group-hover:scale-105 group-hover:border-discord-primary/60 transition-all bg-[#0a0d3a] shrink-0 flex items-center justify-center">
               <img
                 src="/logo.png"
                 alt="Mr. Black Logo"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain drop-shadow-md"
               />
             </div>
-            <div>
-              <span className="font-extrabold font-discord-headline tracking-tight text-sm text-white uppercase">
-                MR. <span className="text-discord-primary">BLACK</span>
+            <div className="flex flex-col">
+              <span className="font-extrabold font-discord-headline tracking-wider text-lg sm:text-xl text-white uppercase leading-none drop-shadow-sm">
+                MR. <span className="text-[#818cf8] font-black drop-shadow-[0_0_12px_rgba(129,140,248,0.5)]">BLACK</span>
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-discord-muted font-sans pt-0.5">
+                Party Game
               </span>
             </div>
           </button>
@@ -217,9 +220,9 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowHowToPlay(true)}
-              className="flex items-center gap-1.5 text-xs font-bold bg-white/5 hover:bg-white/10 border border-white/10 text-white px-3 py-1.5 rounded-xl transition-colors"
+              className="flex items-center gap-1.5 text-xs font-bold bg-white/10 hover:bg-white/15 border border-white/15 hover:border-white/30 text-white px-3.5 py-2 rounded-xl transition-all shadow-sm"
             >
-              <HelpCircle className="w-3.5 h-3.5 text-discord-magenta" />
+              <HelpCircle className="w-4 h-4 text-discord-magenta" />
               <span>Rules</span>
             </button>
           </div>
