@@ -18,6 +18,35 @@ export function VictoryScreen({
 }: VictoryScreenProps) {
   const { winner, winReason, players, activePair, mrblackGuessedWord, mrblackGuessSuccess } = gameState;
 
+  React.useEffect(() => {
+    // Multi-burst celebratory confetti on victory
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#5865F2', '#35ED7E', '#EC48BD', '#FEE75C', '#ffffff'],
+    });
+
+    const timer = setTimeout(() => {
+      confetti({
+        particleCount: 60,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#5865F2', '#35ED7E', '#EC48BD', '#FEE75C'],
+      });
+      confetti({
+        particleCount: 60,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#5865F2', '#35ED7E', '#EC48BD', '#FEE75C'],
+      });
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [winner]);
+
   const getWinnerTitle = () => {
     if (winner === 'civilians') return 'CIVILIANS WIN!';
     if (winner === 'undercovers') return 'UNDERCOVERS WIN!';
@@ -36,48 +65,48 @@ export function VictoryScreen({
     <div className="w-full max-w-sm mx-auto space-y-4 select-none pb-4">
       {/* 1. Header Banner */}
       <div className="text-center space-y-1.5 pt-1">
-        <div className={`inline-flex items-center gap-1.5 border px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest ${getWinnerColor()}`}>
+        <div className={`inline-flex items-center gap-1.5 border px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest font-sans ${getWinnerColor()}`}>
           <Trophy className="w-3.5 h-3.5" />
           Game Complete
         </div>
 
-        <h1 className="text-4xl sm:text-5xl font-black font-discord-headline text-white uppercase tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-bold font-discord-headline text-white uppercase tracking-tight">
           {getWinnerTitle()}
         </h1>
 
         {winReason && (
-          <p className="text-discord-muted text-xs font-medium leading-tight">
+          <p className="text-discord-muted text-xs font-normal leading-tight font-sans">
             {winReason}
           </p>
         )}
 
         {mrblackGuessedWord && (
-          <div className="text-xs bg-discord-surface-onyx border border-white/10 px-3 py-1 rounded-xl inline-block text-discord-muted">
+          <div className="text-xs bg-discord-surface-onyx border border-white/10 px-3 py-1 rounded-xl inline-block text-discord-muted font-sans">
             Mr. Black guess: <strong className="text-white">&quot;{mrblackGuessedWord}&quot;</strong> {mrblackGuessSuccess ? '🎯 (Correct)' : '❌ (Wrong)'}
           </div>
         )}
       </div>
 
       {/* 2. Secret Words Reveal (Clean 2-column or stacked pill) */}
-      <div className="space-y-2">
-        <span className="text-[11px] font-black uppercase tracking-wider text-discord-muted px-1 block">
+      <div className="space-y-2 font-sans">
+        <span className="text-xs font-medium tracking-wider uppercase text-white/70 px-1 block">
           Secret Words
         </span>
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-discord-surface-indigo/90 border border-discord-green/40 p-3 rounded-2xl text-center">
-            <span className="text-[10px] font-black uppercase text-discord-green block">
+            <span className="text-[10px] font-semibold uppercase text-discord-green block">
               Civilian
             </span>
-            <span className="text-lg font-black font-discord-headline text-white block truncate uppercase pt-0.5">
+            <span className="text-lg font-bold font-discord-headline text-white block truncate uppercase pt-0.5">
               {activePair.a}
             </span>
           </div>
 
           <div className="bg-discord-surface-indigo/90 border border-discord-magenta/40 p-3 rounded-2xl text-center">
-            <span className="text-[10px] font-black uppercase text-discord-magenta block">
+            <span className="text-[10px] font-semibold uppercase text-discord-magenta block">
               Undercover
             </span>
-            <span className="text-lg font-black font-discord-headline text-white block truncate uppercase pt-0.5">
+            <span className="text-lg font-bold font-discord-headline text-white block truncate uppercase pt-0.5">
               {activePair.b}
             </span>
           </div>
@@ -85,8 +114,8 @@ export function VictoryScreen({
       </div>
 
       {/* 3. Players & Roles List */}
-      <div className="space-y-1.5">
-        <span className="text-[11px] font-black uppercase tracking-wider text-discord-muted px-1 block">
+      <div className="space-y-1.5 font-sans">
+        <span className="text-xs font-medium tracking-wider uppercase text-white/70 px-1 block">
           Player Identities
         </span>
 
@@ -98,11 +127,11 @@ export function VictoryScreen({
             return (
               <div
                 key={p.id}
-                className="flex items-center justify-between px-3 py-2 rounded-xl bg-discord-surface-indigo/90 border border-white/10 text-xs"
+                className="flex items-center justify-between px-3 py-2 rounded-xl bg-discord-surface-indigo/90 border border-white/10 text-xs font-sans"
               >
                 <div className="flex items-center gap-2">
                   <span
-                    className={`w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs font-discord-headline ${
+                    className={`w-6 h-6 rounded-lg flex items-center justify-center font-bold text-xs ${
                       isCiv
                         ? 'bg-discord-green/20 text-discord-green'
                         : isUc
@@ -112,11 +141,11 @@ export function VictoryScreen({
                   >
                     {isCiv ? 'C' : isUc ? 'U' : 'MB'}
                   </span>
-                  <span className="font-bold text-white uppercase">{p.name}</span>
+                  <span className="font-medium text-white">{p.name}</span>
                 </div>
 
                 <span
-                  className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${
+                  className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-md ${
                     isCiv
                       ? 'bg-discord-green/10 text-discord-green'
                       : isUc
@@ -133,10 +162,10 @@ export function VictoryScreen({
       </div>
 
       {/* 4. Action Buttons */}
-      <div className="space-y-2 pt-2">
+      <div className="space-y-2 pt-2 font-sans">
         <button
           onClick={onPlayAgainSame}
-          className="w-full bg-discord-primary hover:bg-discord-primary-hover text-white font-black font-discord-headline text-base py-3.5 rounded-2xl shadow-float flex items-center justify-center gap-2 uppercase tracking-wide transition-all"
+          className="w-full bg-discord-primary hover:bg-discord-primary-hover text-white font-bold text-sm py-3.5 rounded-2xl shadow-float flex items-center justify-center gap-2 uppercase tracking-wide transition-all font-sans"
         >
           <RotateCcw className="w-4 h-4" />
           <span>Play Again</span>
@@ -144,7 +173,7 @@ export function VictoryScreen({
 
         <button
           onClick={onBackToLobby}
-          className="w-full py-2.5 text-xs text-discord-muted hover:text-white font-bold transition-colors text-center"
+          className="w-full py-2.5 text-xs text-discord-muted hover:text-white font-medium transition-colors text-center font-sans"
         >
           Back to Lobby
         </button>
