@@ -14,7 +14,7 @@ import { HowToPlayModal } from '@/components/HowToPlayModal';
 
 export default function Home() {
   const [gameState, setGameState] = React.useState<GameState | null>(null);
-  const [customGeneratedPack, setCustomGeneratedPack] = React.useState<Pack | null>(null);
+  const [customGeneratedPacks, setCustomGeneratedPacks] = React.useState<Pack[]>([]);
   const [showHowToPlay, setShowHowToPlay] = React.useState(false);
   const [eliminatedAnnouncement, setEliminatedAnnouncement] = React.useState<Player | null>(null);
 
@@ -33,11 +33,17 @@ export default function Home() {
   }, []);
 
   // 1. Start Game from Lobby
-  const handleStartGame = (settings: GameSettings, customPack?: Pack) => {
-    if (customPack) {
-      setCustomGeneratedPack(customPack);
+  const handleStartGame = (settings: GameSettings, customPacks?: Pack | Pack[]) => {
+    const extraPacks = Array.isArray(customPacks)
+      ? customPacks
+      : customPacks
+      ? [customPacks]
+      : [];
+
+    if (extraPacks.length > 0) {
+      setCustomGeneratedPacks(extraPacks);
     }
-    const newGame = initializeGame(settings, customPack);
+    const newGame = initializeGame(settings, extraPacks);
     setGameState(newGame);
 
     fetch('/api/analytics/track', {
@@ -177,7 +183,7 @@ export default function Home() {
   // 6. Replay Handlers
   const handlePlayAgainSame = () => {
     if (!gameState) return;
-    const newGame = initializeGame(gameState.settings, customGeneratedPack || undefined);
+    const newGame = initializeGame(gameState.settings, customGeneratedPacks);
     setGameState(newGame);
   };
 

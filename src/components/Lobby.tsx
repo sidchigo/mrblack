@@ -14,7 +14,7 @@ import { BUILT_IN_PACKS } from '@/lib/game/packs';
 import { GameSettings, Pack } from '@/types/game';
 
 interface LobbyProps {
-  onStartGame: (settings: GameSettings, customPack?: Pack) => void;
+  onStartGame: (settings: GameSettings, customPack?: Pack | Pack[]) => void;
 }
 
 const DEFAULT_NAMES = [
@@ -47,6 +47,21 @@ export function Lobby({ onStartGame }: LobbyProps) {
     BUILT_IN_PACKS[0].id,
     BUILT_IN_PACKS[1].id,
   ]);
+
+  // Community / AI Generated Packs from Redis
+  const [communityPacks, setCommunityPacks] = React.useState<Pack[]>([]);
+
+  // Fetch recent community packs on mount
+  React.useEffect(() => {
+    fetch('/api/packs/recent')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.packs && Array.isArray(data.packs)) {
+          setCommunityPacks(data.packs);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // AI custom pack
   const [customTopic, setCustomTopic] = React.useState('');
@@ -126,7 +141,7 @@ export function Lobby({ onStartGame }: LobbyProps) {
             selectedPackIds: [...selectedPackIds, generatedPack.id],
             customTopic: customTopic.trim(),
           },
-          generatedPack
+          [...communityPacks, generatedPack]
         );
       } catch (err: any) {
         setAiError(err.message || 'AI busy. Try again or uncheck AI pack.');
@@ -134,14 +149,19 @@ export function Lobby({ onStartGame }: LobbyProps) {
         setAiGenerating(false);
       }
     } else {
-      onStartGame({
-        players: players.map((p, i) => p.trim() || `Player ${i + 1}`),
-        undercoverCount,
-        mrblackCount,
-        selectedPackIds,
-      });
+      onStartGame(
+        {
+          players: players.map((p, i) => p.trim() || `Player ${i + 1}`),
+          undercoverCount,
+          mrblackCount,
+          selectedPackIds,
+        },
+        communityPacks
+      );
     }
   };
+
+  const allBuiltInAndCommunityPacks = [...BUILT_IN_PACKS, ...communityPacks];
 
   return (
     <div className="w-full max-w-sm mx-auto space-y-4 select-none pb-4">
@@ -163,19 +183,19 @@ export function Lobby({ onStartGame }: LobbyProps) {
             <span>1. Word Packs ({selectedPackIds.length + (isAiPackActive && customTopic.trim() ? 1 : 0)})</span>
             <button
               onClick={() => {
-                if (selectedPackIds.length === BUILT_IN_PACKS.length) {
+                if (selectedPackIds.length === allBuiltInAndCommunityPacks.length) {
                   setSelectedPackIds([BUILT_IN_PACKS[0].id]);
                 } else {
-                  setSelectedPackIds(BUILT_IN_PACKS.map((p) => p.id));
+                  setSelectedPackIds(allBuiltInAndCommunityPacks.map((p) => p.id));
                 }
               }}
               className="text-[10px] text-discord-primary hover:underline font-bold"
             >
-              {selectedPackIds.length === BUILT_IN_PACKS.length ? 'Reset' : 'Select All'}
+              {selectedPackIds.length === allBuiltInAndCommunityPacks.length ? 'Reset' : 'Select All'}
             </button>
           </div>
 
-          {/* Clean Grid of Word Packs including Custom */}
+          {/* Clean Grid of Word Packs including Community & Custom */}
           <div className="grid grid-cols-2 gap-1.5">
             {BUILT_IN_PACKS.map((pack) => {
               const isSelected = selectedPackIds.includes(pack.id);
@@ -214,7 +234,7 @@ export function Lobby({ onStartGame }: LobbyProps) {
             >
               <div className="flex items-center gap-1.5 truncate pr-1">
                 <Sparkles className="w-3.5 h-3.5 text-discord-yellow shrink-0" />
-                <span className="font-discord-headline tracking-wide uppercase text-xs">Custom</span>
+                <span className="font-discord-headline tracking-wide uppercase text-xs">Custom AI</span>
               </div>
               <span
                 className={`w-4 h-4 rounded-md shrink-0 flex items-center justify-center text-[9px] ${
@@ -241,6 +261,48 @@ export function Lobby({ onStartGame }: LobbyProps) {
               </div>
             )}
           </div>
+
+          {/* Section: Trending Community Packs (when available) */}
+          {communityPacks.length > 0 && (
+            <div className="space-y-1.5 pt-1">
+              <div className="flex items-center justify-between text-xs font-black font-discord-headline uppercase text-white/90 px-1">
+                <span className="flex items-center gap-1.5 text-discord-green">
+                  <span>🔥 Trending</span>
+                  <span className="text-[10px] text-discord-muted font-normal">({communityPacks.length})</span>
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                {communityPacks.map((pack) => {
+                  const isSelected = selectedPackIds.includes(pack.id);
+                  return (
+                    <button
+                      key={pack.id}
+                      onClick={() => handleTogglePack(pack.id)}
+                      title={pack.name}
+                      className={`px-3 py-2.5 rounded-xl text-left text-xs font-bold transition-all flex items-center justify-between border ${
+                        isSelected
+                          ? 'bg-discord-green text-black border-discord-green shadow-float'
+                          : 'bg-discord-surface-indigo/90 hover:bg-discord-surface-indigo text-discord-muted hover:text-white border-white/10'
+                      }`}
+                    >
+                      <span className="truncate pr-1 font-discord-headline tracking-wide uppercase text-xs">
+                        {pack.name}
+                      </span>
+                      <span
+                        className={`w-4 h-4 rounded-md shrink-0 flex items-center justify-center text-[9px] ${
+                          isSelected
+                            ? 'bg-black text-discord-green font-black'
+                            : 'border border-white/20'
+                        }`}
+                      >
+                        {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {aiError && (
             <div className="text-[11px] text-discord-red flex items-center gap-1 px-1">

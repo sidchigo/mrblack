@@ -1,13 +1,26 @@
 import { GameSettings, GameState, Player, Pack, WordPair } from '@/types/game';
 import { getRandomPairFromPacks, BUILT_IN_PACKS } from './packs';
 
-export function initializeGame(settings: GameSettings, customPack?: Pack): GameState {
-  let chosenPacks: Pack[] = [];
-  if (customPack) {
-    chosenPacks = [customPack];
-  } else if (settings.selectedPackIds && settings.selectedPackIds.length > 0) {
-    chosenPacks = BUILT_IN_PACKS.filter((p) => settings.selectedPackIds.includes(p.id));
+export function initializeGame(
+  settings: GameSettings,
+  customPacks?: Pack | Pack[]
+): GameState {
+  const extraPacks: Pack[] = Array.isArray(customPacks)
+    ? customPacks
+    : customPacks
+    ? [customPacks]
+    : [];
+
+  const allAvailablePacks = [...BUILT_IN_PACKS, ...extraPacks];
+
+  let chosenPacks: Pack[] = allAvailablePacks.filter((p) =>
+    settings.selectedPackIds.includes(p.id)
+  );
+
+  if (chosenPacks.length === 0 && extraPacks.length > 0) {
+    chosenPacks = extraPacks;
   }
+
   if (chosenPacks.length === 0) {
     chosenPacks = [BUILT_IN_PACKS[0]];
   }

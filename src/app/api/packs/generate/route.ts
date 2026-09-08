@@ -51,9 +51,9 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Generate word pairs via OpenAI-compatible endpoint
-    let pairs;
+    let result;
     try {
-      pairs = await generateWordPairsWithLLM(trimmedTopic);
+      result = await generateWordPairsWithLLM(trimmedTopic);
     } catch (llmError: any) {
       console.error('LLM generation error:', llmError);
       return NextResponse.json(
@@ -65,6 +65,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const { title, pairs } = result;
+
     if (!pairs || pairs.length === 0) {
       return NextResponse.json(
         { error: 'Could not generate words for this topic. Please try another.' },
@@ -72,9 +74,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Determine clean punchy display name (1-2 words max, uppercase)
+    const displayName =
+      title && title.length <= 15
+        ? title.toUpperCase()
+        : trimmedTopic.split(/\s+/).slice(0, 2).join(' ').toUpperCase();
+
     const newPack: Pack = {
       id: `ai-${slug}`,
-      name: trimmedTopic,
+      name: displayName,
       description: `AI-generated custom pack for "${trimmedTopic}"`,
       category: 'Custom AI Pack',
       isBuiltIn: false,
@@ -83,6 +91,21 @@ export async function POST(req: NextRequest) {
 
     // 4. Store in Redis indefinitely (NO TTL as per design-decisions.md)
     await redis.set(redisKey, newPack);
+
+    // 5. Index in recent community packs list (keep last 30 unique packs)
+    try {
+      const packMeta = JSON.stringify({
+        id: newPack.id,
+        name: newPack.name,
+        slug,
+      });
+      // Remove duplicate if already present in list, then lpush to top
+      await redis.lrem('recent_packs', 0, packMeta);
+      await redis.lpush('recent_packs', packMeta);
+    } catch (indexErr) {
+      console.error('Failed to index recent pack:', indexErr);
+    }
+
     await trackGameEvent('pack_generated', { slug });
 
     return NextResponse.json({ pack: newPack, cached: false });
