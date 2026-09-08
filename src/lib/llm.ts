@@ -22,19 +22,23 @@ export async function generateWordPairsWithLLM(
   const prompt = `You are a creative party game designer for "Mr. Black", a popular social deduction party game in India (similar to Undercover / Mr. White).
 The user requested a category pack for: "${topic}".
 
-Generate:
-1. "title": A short, punchy 1-word (or max 2 words) uppercase pack title suitable for a button label (e.g. "MEMES", "BOLLYWOOD", "CRICKET", "ANIME", "STARTUPS", "COLLEGE").
-2. "pairs": Exactly 10 to 20 pairs of related words suitable for an Indian audience (mixing Bollywood, desi pop-culture, Indian food, tech, everyday Indian life, Hindi/Hinglish slang where fitting).
-For each pair:
-- "a" is the Civilian secret word.
-- "b" is the Undercover secret word (closely related to "a", but with a subtle fun difference so people give ambiguous clues).
+STRICT RULES:
+1. "title": A short, punchy 1-word (or max 2 words) uppercase pack title suitable for a button label (e.g. "MEMES", "BOLLYWOOD", "CRICKET", "ANIME", "STARTUPS", "COLLEGE", "STREETFOOD").
+2. "pairs": EXACTLY 20 to 25 unique pairs of closely related secret words (MINIMUM 20 PAIRS).
+3. SINGLE-WORD ONLY RULE: Each secret word ("a" and "b") MUST be a SINGLE concise word/noun (e.g. "Samosa"/"Kachori", "Batman"/"Superman", "Biryani"/"Pulao", "Zomato"/"Swiggy", "Virat"/"Rohit", "Chai"/"Coffee"). Do NOT use long sentences or multi-word phrases.
+4. Audience & Context: Suitable for an Indian audience, mixing Bollywood, desi pop-culture, food, festivals, tech, everyday desi life, and Hindi/Hinglish slang where fitting.
+5. For each pair:
+   - "a" is the Civilian secret word.
+   - "b" is the Undercover secret word (closely related to "a", but with a subtle fun difference so players give ambiguous clues).
 
 Return ONLY valid JSON matching this exact structure:
 {
-  "title": "MEMES",
+  "title": "STREETFOOD",
   "pairs": [
     { "a": "Samosa", "b": "Kachori" },
-    { "a": "Pani Puri", "b": "Sev Puri" }
+    { "a": "Jalebi", "b": "Imarti" },
+    { "a": "Dosa", "b": "Uttapam" },
+    { "a": "Biryani", "b": "Pulao" }
   ]
 }`;
 
@@ -43,7 +47,8 @@ Return ONLY valid JSON matching this exact structure:
     messages: [
       {
         role: 'system',
-        content: 'You are an expert game creator specialized in Indian pop culture, humor, and word deduction games. Return strictly JSON.',
+        content:
+          'You are an expert game creator specialized in Indian pop culture, humor, and word deduction games. You strictly generate at least 20 single-word pairs per pack. Return strictly JSON.',
       },
       {
         role: 'user',
@@ -89,11 +94,23 @@ Return ONLY valid JSON matching this exact structure:
     throw new Error('Invalid JSON structure returned by LLM');
   }
 
-  const validPairs = parsed.pairs.filter(
-    (p: any) => typeof p.a === 'string' && typeof p.b === 'string' && p.a.trim() && p.b.trim()
-  );
+  // Deduplicate and filter valid pairs
+  const seen = new Set<string>();
+  const validPairs: WordPair[] = [];
 
-  const title = typeof parsed.title === 'string' && parsed.title.trim() ? parsed.title.trim() : undefined;
+  for (const p of parsed.pairs) {
+    if (typeof p?.a === 'string' && typeof p?.b === 'string') {
+      const a = p.a.trim();
+      const b = p.b.trim();
+      const key = `${a.toLowerCase()}:::${b.toLowerCase()}`;
+      if (a && b && a.toLowerCase() !== b.toLowerCase() && !seen.has(key)) {
+        seen.add(key);
+        validPairs.push({ a, b });
+      }
+    }
+  }
+
+  const title = typeof parsed.title === 'string' && parsed.title.trim() ? parsed.title.trim().toUpperCase() : undefined;
 
   return {
     title,
