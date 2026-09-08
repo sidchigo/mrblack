@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import confetti from 'canvas-confetti';
 import { Trophy, RotateCcw } from 'lucide-react';
 import { GameState } from '@/types/game';
+import { VictoryCelebrationOverlay } from './VictoryCelebrationOverlay';
 
 interface VictoryScreenProps {
   gameState: GameState;
@@ -18,34 +18,9 @@ export function VictoryScreen({
 }: VictoryScreenProps) {
   const { winner, winReason, players, activePair, mrblackGuessedWord, mrblackGuessSuccess } = gameState;
 
-  React.useEffect(() => {
-    // Multi-burst celebratory confetti on victory
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#5865F2', '#35ED7E', '#EC48BD', '#FEE75C', '#ffffff'],
-    });
-
-    const timer = setTimeout(() => {
-      confetti({
-        particleCount: 60,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-        colors: ['#5865F2', '#35ED7E', '#EC48BD', '#FEE75C'],
-      });
-      confetti({
-        particleCount: 60,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-        colors: ['#5865F2', '#35ED7E', '#EC48BD', '#FEE75C'],
-      });
-    }, 250);
-
-    return () => clearTimeout(timer);
-  }, [winner]);
+  const [showCelebrationIntro, setShowCelebrationIntro] = React.useState(
+    winner === 'civilians' || winner === 'undercovers' || winner === 'mrblack'
+  );
 
   const getWinnerTitle = () => {
     if (winner === 'civilians') return 'CIVILIANS WIN!';
@@ -62,7 +37,16 @@ export function VictoryScreen({
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto space-y-4 select-none pb-4">
+    <>
+      {showCelebrationIntro && winner && (
+        <VictoryCelebrationOverlay
+          winner={winner}
+          players={players}
+          onFinish={() => setShowCelebrationIntro(false)}
+        />
+      )}
+
+      <div className="w-full max-w-sm mx-auto space-y-4 select-none pb-4">
       {/* 1. Header Banner */}
       <div className="text-center space-y-1.5 pt-1">
         <div className={`inline-flex items-center gap-1.5 border px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest font-sans ${getWinnerColor()}`}>
@@ -179,5 +163,6 @@ export function VictoryScreen({
         </button>
       </div>
     </div>
+    </>
   );
 }
