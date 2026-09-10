@@ -42,7 +42,7 @@ export function initializeGame(
     ...Array(mrblackCount).fill('mrblack'),
   ];
 
-  // Helper to shuffle array with Fisher-Yates
+  // Pure random Fisher-Yates shuffle for unpredictable social deduction gameplay
   const shuffle = <T>(array: T[]): T[] => {
     const arr = [...array];
     for (let i = arr.length - 1; i > 0; i--) {
@@ -52,34 +52,7 @@ export function initializeGame(
     return arr;
   };
 
-  let shuffledRoles = shuffle(roles);
-
-  // If there was a previous game and enough civilian slots exist,
-  // try up to 30 shuffles to avoid assigning special roles (undercover / mrblack)
-  // to the EXACT same player who had a special role in the immediately preceding game.
-  if (previousGameState && civilianCount >= undercoverCount + mrblackCount) {
-    const previousImpostorNames = new Set(
-      previousGameState.players
-        .filter((p) => p.role === 'undercover' || p.role === 'mrblack')
-        .map((p) => p.name.trim().toLowerCase())
-    );
-
-    if (previousImpostorNames.size > 0) {
-      for (let attempt = 0; attempt < 30; attempt++) {
-        const candidate = shuffle(roles);
-        // Check if any previous impostor gets an impostor role again
-        const hasImmediateRepeat = candidate.some((role, idx) => {
-          const playerName = (settings.players[idx] || '').trim().toLowerCase();
-          return (role === 'undercover' || role === 'mrblack') && previousImpostorNames.has(playerName);
-        });
-
-        if (!hasImmediateRepeat) {
-          shuffledRoles = candidate;
-          break;
-        }
-      }
-    }
-  }
+  const shuffledRoles = shuffle(roles);
 
   // Create Player entities
   const players: Player[] = settings.players.map((name, index) => {

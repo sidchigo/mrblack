@@ -68,38 +68,35 @@ console.log('🧪 Running Game Logic Tests...\n');
   console.log('✅ Test 3 Passed: Impostors Win condition when outnumbering civilians');
 }
 
-// Test 4: Anti-Repetition - Prevent same player getting impostor back-to-back
+// Test 4: Role Randomization & Fair Distribution across players
 {
   const settings: GameSettings = {
-    players: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6'],
+    players: ['P1', 'P2', 'P3', 'P4'],
     undercoverCount: 1,
     mrblackCount: 1,
     selectedPackIds: ['desi-food'],
   };
 
-  const game1 = initializeGame(settings);
-  const impostor1 = game1.players.find((p) => p.role === 'undercover' || p.role === 'mrblack')?.name;
+  const impostorCounts: Record<string, number> = { P1: 0, P2: 0, P3: 0, P4: 0 };
+  const ROUNDS = 200;
 
-  let repeatFound = false;
-  // Run 10 consecutive next games and verify consecutive repeat is minimized
-  let prevGame = game1;
-  for (let i = 0; i < 10; i++) {
-    const nextGame = initializeGame(settings, undefined, prevGame);
-    const prevImpostorNames = new Set(
-      prevGame.players.filter((p) => p.role !== 'civilian').map((p) => p.name)
-    );
-    const newImpostors = nextGame.players.filter((p) => p.role !== 'civilian');
-    
-    // In a 6 player game with 2 impostors and 4 civilians, consecutive repeat should be avoided
-    const hasOverlap = newImpostors.some((p) => prevImpostorNames.has(p.name));
-    if (hasOverlap) {
-      repeatFound = true;
-    }
-    prevGame = nextGame;
+  for (let i = 0; i < ROUNDS; i++) {
+    const game = initializeGame(settings);
+    game.players.forEach((p) => {
+      if (p.role === 'undercover' || p.role === 'mrblack') {
+        impostorCounts[p.name] = (impostorCounts[p.name] || 0) + 1;
+      }
+    });
   }
 
-  assert.strictEqual(repeatFound, false, 'Should avoid assigning impostor role to same players in consecutive rounds');
-  console.log('✅ Test 4 Passed: Anti-Repetition role rotation');
+  // Every player should get a chance to be an impostor over 200 rounds (expected ~100 each for 2 impostors across 4 players)
+  Object.values(impostorCounts).forEach((count) => {
+    assert.ok(
+      count > 40,
+      `Each player should have a fair random chance of being impostor (got ${count})`
+    );
+  });
+  console.log('✅ Test 4 Passed: Fair random role distribution (unbiased, unpredictable)');
 }
 
 // Test 5: Anti-Repetition - Avoid immediate repeated word pair
