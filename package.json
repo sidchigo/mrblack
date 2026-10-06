@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "npx ts-node -O \"{\\\"module\\\":\\\"commonjs\\\"}\" src/test/game-logic.test.ts"
+    "test": "npx ts-node -O \"{\\\"module\\\":\\\"commonjs\\\"}\" src/test/game-logic.test.ts && npx ts-node -O \"{\\\"module\\\":\\\"commonjs\\\"}\" src/test/room-logic.test.ts"
   },
   "keywords": [],
   "author": "",

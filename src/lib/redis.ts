@@ -113,6 +113,12 @@ class InMemoryRedis {
       return 0;
     }
   }
+
+  async del(key: string): Promise<number> {
+    const existed = this.store.has(key);
+    this.store.delete(key);
+    return existed ? 1 : 0;
+  }
 }
 
 let redisClient: Redis | InMemoryRedis;

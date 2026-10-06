@@ -22,6 +22,10 @@ export function VictoryScreen({
     winner === 'civilians' || winner === 'undercovers' || winner === 'mrblack'
   );
 
+  const handleFinishCelebration = React.useCallback(() => {
+    setShowCelebrationIntro(false);
+  }, []);
+
   const getWinnerTitle = () => {
     if (winner === 'civilians') return 'CIVILIANS WIN!';
     if (winner === 'undercovers') return 'UNDERCOVERS WIN!';
@@ -42,7 +46,7 @@ export function VictoryScreen({
         <VictoryCelebrationOverlay
           winner={winner}
           players={players}
-          onFinish={() => setShowCelebrationIntro(false)}
+          onFinish={handleFinishCelebration}
         />
       )}
 

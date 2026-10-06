@@ -56,4 +56,32 @@ export interface GameState {
   mrblackGuessSuccess?: boolean;
   winner: 'civilians' | 'undercovers' | 'mrblack' | null;
   winReason?: string;
+  votes?: Record<string, string>; // voterId -> targetPlayerId
+  readyPlayers?: string[]; // playerIds who have acknowledged their card
 }
+
+export interface RoomPlayer {
+  id: string;
+  name: string;
+  isHost: boolean;
+  isReady: boolean;
+  role?: GameRole;
+  word?: string | null;
+  isEliminated: boolean;
+  eliminatedRound?: number;
+  revealedCard?: boolean;
+  votedFor?: string | null;
+  lastSeen: number;
+}
+
+export interface RoomState {
+  code: string;
+  hostId: string;
+  status: 'lobby' | 'playing' | 'game_over';
+  settings: GameSettings;
+  players: RoomPlayer[];
+  gameState: GameState | null;
+  createdAt: number;
+  updatedAt: number;
+}
+

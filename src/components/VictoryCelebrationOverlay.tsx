@@ -95,30 +95,37 @@ export function VictoryCelebrationOverlay({
   };
 
   const theme = getThemeConfig();
+  const onFinishRef = React.useRef(onFinish);
+  onFinishRef.current = onFinish;
+
+  const handleDismiss = React.useCallback(() => {
+    setVisible(false);
+    onFinishRef.current?.();
+  }, []);
 
   React.useEffect(() => {
-    // Start fadeout after 4.4 seconds so it smoothly vanishes at 5 seconds
+    // Start fadeout after 3.8 seconds so it smoothly vanishes at 4.2 seconds
     const fadeTimer = setTimeout(() => {
       setFadingOut(true);
-    }, 4400);
+    }, 3800);
 
     const closeTimer = setTimeout(() => {
-      setVisible(false);
-      onFinish?.();
-    }, 5000);
+      handleDismiss();
+    }, 4400);
 
     return () => {
       clearTimeout(fadeTimer);
       clearTimeout(closeTimer);
     };
-  }, [onFinish]);
+  }, [handleDismiss]);
 
   if (!visible) return null;
 
   return (
     <div
-      className={`fixed inset-0 top-0 left-0 right-0 bottom-0 w-full h-full min-h-dvh !m-0 z-[99999] flex flex-col items-center justify-center select-none overflow-hidden transition-opacity duration-700 pointer-events-auto ${
-        fadingOut ? 'opacity-0' : 'opacity-100'
+      onClick={handleDismiss}
+      className={`fixed inset-0 top-0 left-0 right-0 bottom-0 w-full h-full min-h-dvh !m-0 z-[99999] flex flex-col items-center justify-center select-none overflow-hidden transition-opacity duration-500 pointer-events-auto cursor-pointer ${
+        fadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
       style={{
         backgroundColor: '#030307',
@@ -135,9 +142,9 @@ export function VictoryCelebrationOverlay({
       />
 
       {/* Vertical structured layout */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 max-w-md w-full animate-in zoom-in-95 duration-500 space-y-6">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 max-w-md w-full animate-in zoom-in-95 duration-500 space-y-5">
         {/* 1. Header: Among Us style pixel/stencil headline */}
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <h1
             className={`text-5xl sm:text-6xl font-extrabold uppercase tracking-[0.18em] font-discord-headline ${theme.titleColor}`}
             style={{
@@ -217,6 +224,10 @@ export function VictoryCelebrationOverlay({
             </div>
           </div>
         )}
+
+        <div className="text-[10px] text-white/40 uppercase tracking-widest font-sans pt-2">
+          Tap anywhere to continue
+        </div>
       </div>
     </div>
   );

@@ -6,13 +6,15 @@ import { Player } from '@/types/game';
 
 interface MrBlackGuessModalProps {
   player: Player;
-  civilianWord: string;
-  onGuessSubmitted: (guessedWord: string, isCorrect: boolean) => void;
+  civilianWord?: string;
+  isGuesser?: boolean;
+  onGuessSubmitted?: (guessedWord: string, isCorrect: boolean) => void;
 }
 
 export function MrBlackGuessModal({
   player,
-  civilianWord,
+  civilianWord = '',
+  isGuesser = true,
   onGuessSubmitted,
 }: MrBlackGuessModalProps) {
   const [guess, setGuess] = React.useState('');
@@ -25,8 +27,8 @@ export function MrBlackGuessModal({
     const cleanGuess = guess.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
     const cleanTarget = civilianWord.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
 
-    const isCorrect = cleanGuess === cleanTarget;
-    onGuessSubmitted(guess.trim(), isCorrect);
+    const isCorrect = civilianWord ? cleanGuess === cleanTarget : false;
+    onGuessSubmitted?.(guess.trim(), isCorrect);
   };
 
   return (
@@ -40,32 +42,51 @@ export function MrBlackGuessModal({
           Mr. Black Voted Out!
         </div>
 
-        <h3 className="text-2xl sm:text-3xl font-black font-discord-headline text-white mb-1.5 uppercase">
-          {player.name}, Last Chance!
-        </h3>
-        <p className="text-xs text-discord-muted mb-4 leading-tight">
-          Guess the <span className="text-white font-bold">Civilian secret word</span> to steal victory!
-        </p>
+        {isGuesser ? (
+          <>
+            <h3 className="text-2xl sm:text-3xl font-black font-discord-headline text-white mb-1.5 uppercase">
+              {player.name}, Last Chance!
+            </h3>
+            <p className="text-xs text-discord-muted mb-4 leading-tight">
+              Guess the <span className="text-white font-bold">Civilian secret word</span> to steal victory!
+            </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            value={guess}
-            onChange={(e) => setGuess(e.target.value)}
-            placeholder="Type civilian word guess..."
-            autoFocus
-            className="w-full bg-discord-surface-onyx border border-white/10 rounded-2xl px-4 py-3.5 text-base text-white placeholder:text-discord-muted focus:outline-none focus:border-discord-yellow transition-all text-center font-bold"
-          />
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                type="text"
+                value={guess}
+                onChange={(e) => setGuess(e.target.value)}
+                placeholder="Type civilian word guess..."
+                autoFocus
+                className="w-full bg-discord-surface-onyx border border-white/10 rounded-2xl px-4 py-3.5 text-base text-white placeholder:text-discord-muted focus:outline-none focus:border-discord-yellow transition-all text-center font-bold"
+              />
 
-          <button
-            type="submit"
-            disabled={!guess.trim()}
-            className="w-full bg-discord-yellow hover:bg-yellow-400 disabled:opacity-40 text-discord-ink-dark font-extrabold text-base py-3.5 px-6 rounded-2xl shadow-float transition-all"
-          >
-            Submit Final Guess
-          </button>
-        </form>
+              <button
+                type="submit"
+                disabled={!guess.trim()}
+                className="w-full bg-discord-yellow hover:bg-yellow-400 disabled:opacity-40 text-discord-ink-dark font-extrabold text-base py-3.5 px-6 rounded-2xl shadow-float transition-all"
+              >
+                Submit Final Guess
+              </button>
+            </form>
+          </>
+        ) : (
+          <>
+            <h3 className="text-2xl sm:text-3xl font-black font-discord-headline text-white mb-1.5 uppercase">
+              {player.name} Is Guessing...
+            </h3>
+            <p className="text-xs text-discord-muted mb-4 leading-tight">
+              They have one final attempt to guess the Civilian secret word and steal the victory!
+            </p>
+
+            <div className="flex items-center justify-center gap-2 bg-discord-surface-onyx border border-white/10 rounded-2xl py-4 px-3 text-discord-yellow text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-discord-yellow animate-ping" />
+              <span>Waiting for {player.name}&apos;s guess...</span>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
 }
+

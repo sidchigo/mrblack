@@ -10,16 +10,33 @@ import { EliminationModal } from '@/components/EliminationModal';
 import { MrBlackGuessModal } from '@/components/MrBlackGuessModal';
 import { VictoryScreen } from '@/components/VictoryScreen';
 import { HowToPlayModal } from '@/components/HowToPlayModal';
+import { RoomController } from '@/components/RoomController';
 
 interface GameControllerProps {
   initialPackIds?: string[];
+  initialRoomCode?: string;
 }
 
-export function GameController({ initialPackIds }: GameControllerProps) {
+export function GameController({ initialPackIds, initialRoomCode }: GameControllerProps) {
+  // Pass & Play Game State
   const [gameState, setGameState] = React.useState<GameState | null>(null);
   const [customGeneratedPacks, setCustomGeneratedPacks] = React.useState<Pack[]>([]);
   const [showHowToPlay, setShowHowToPlay] = React.useState(false);
   const [eliminatedAnnouncement, setEliminatedAnnouncement] = React.useState<Player | null>(null);
+
+  // Online Room State
+  const [activeRoomCode, setActiveRoomCode] = React.useState<string | null>(null);
+  const [activePlayerId, setActivePlayerId] = React.useState<string | null>(null);
+
+  // Check initial session storage for active room reconnection
+  React.useEffect(() => {
+    const savedRoom = sessionStorage.getItem('mrblack_active_room_code');
+    const savedPlayer = sessionStorage.getItem('mrblack_active_player_id');
+    if (savedRoom && savedPlayer) {
+      setActiveRoomCode(savedRoom);
+      setActivePlayerId(savedPlayer);
+    }
+  }, []);
 
   // Track initial anonymous DAU on client
   React.useEffect(() => {
@@ -35,8 +52,31 @@ export function GameController({ initialPackIds }: GameControllerProps) {
     }).catch(() => {});
   }, []);
 
-  // 1. Start Game from Lobby
+  // Handler to enter Room mode
+  const handleJoinRoom = (roomCode: string, playerId: string) => {
+    setActiveRoomCode(roomCode);
+    setActivePlayerId(playerId);
+    sessionStorage.setItem('mrblack_active_room_code', roomCode);
+    sessionStorage.setItem('mrblack_active_player_id', playerId);
+  };
+
+  // Handler to leave Room mode
+  const handleExitRoom = () => {
+    setActiveRoomCode(null);
+    setActivePlayerId(null);
+    sessionStorage.removeItem('mrblack_active_room_code');
+    sessionStorage.removeItem('mrblack_active_player_id');
+  };
+
+  // 1. Start Game from Pass & Play Lobby
   const handleStartGame = (settings: GameSettings, customPacks?: Pack | Pack[]) => {
+    try {
+      localStorage.setItem('mrblack_saved_players', JSON.stringify(settings.players));
+      localStorage.setItem('mrblack_saved_packs', JSON.stringify(settings.selectedPackIds));
+      localStorage.setItem('mrblack_saved_undercover', settings.undercoverCount.toString());
+      localStorage.setItem('mrblack_saved_mrblack', settings.mrblackCount.toString());
+    } catch {}
+
     const extraPacks = Array.isArray(customPacks)
       ? customPacks
       : customPacks
@@ -87,7 +127,7 @@ export function GameController({ initialPackIds }: GameControllerProps) {
     });
   };
 
-  // 3. Handle Player Eliminated via Vote
+  // 3. Handle Player Eliminated via Vote in Pass & Play
   const handlePlayerVotedOut = (votedPlayer: Player) => {
     if (!gameState) return;
 
@@ -190,9 +230,28 @@ export function GameController({ initialPackIds }: GameControllerProps) {
     setGameState(null);
   };
 
+  // IF ROOM MODE IS ACTIVE
+  if (activeRoomCode && activePlayerId) {
+    return (
+      <RoomController
+        roomCode={activeRoomCode}
+        initialPlayerId={activePlayerId}
+        onExitRoom={handleExitRoom}
+      />
+    );
+  }
+
+  // PASS AND PLAY MODE
   return (
     <div className="w-full flex flex-col items-center justify-center">
-      {!gameState && <Lobby onStartGame={handleStartGame} initialPackIds={initialPackIds} />}
+      {!gameState && (
+        <Lobby
+          onStartGame={handleStartGame}
+          onJoinRoom={handleJoinRoom}
+          initialPackIds={initialPackIds}
+          initialRoomCode={initialRoomCode}
+        />
+      )}
 
       {gameState && gameState.phase === 'reveal' && (
         <PassAndPlayReveal

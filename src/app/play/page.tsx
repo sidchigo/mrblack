@@ -21,12 +21,13 @@ export const metadata: Metadata = {
 };
 
 interface PlayPageProps {
-  searchParams: { category?: string; pack?: string };
+  searchParams: { category?: string; pack?: string; room?: string; code?: string };
 }
 
 export default function PlayPage({ searchParams }: PlayPageProps) {
   // Determine initial pack IDs if a category or specific pack was passed in URL query
   let initialPackIds: string[] | undefined = undefined;
+  const initialRoomCode = searchParams.room || searchParams.code || undefined;
 
   if (searchParams.pack) {
     const matched = BUILT_IN_PACKS.find((p) => p.id === searchParams.pack);
@@ -48,8 +49,9 @@ export default function PlayPage({ searchParams }: PlayPageProps) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4">
       <Suspense fallback={<div className="text-white text-xs">Loading game...</div>}>
-        <GameController initialPackIds={initialPackIds} />
+        <GameController initialPackIds={initialPackIds} initialRoomCode={initialRoomCode} />
       </Suspense>
     </div>
   );
 }
+
